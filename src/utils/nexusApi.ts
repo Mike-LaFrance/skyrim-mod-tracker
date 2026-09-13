@@ -1,4 +1,5 @@
 // Nexus Mods API Client & Rate Limit Manager
+import { ModCategory, PluginType } from '../types';
 
 const NEXUS_API_KEY_STORAGE = 'skyrim_nexus_api_key';
 
@@ -17,12 +18,27 @@ export interface NexusUserValidation {
 export interface NexusModApiResponse {
   name: string;
   summary: string;
+  description?: string;
+  picture_url?: string;
   version: string;
   author: string;
   mod_id: number;
   category_id: number;
   updated_timestamp: number;
   endorsement_count: number;
+}
+
+export interface NexusAutoFetchResult {
+  success: boolean;
+  name?: string;
+  author?: string;
+  version?: string;
+  summary?: string;
+  nexusUrl?: string;
+  imageUrl?: string;
+  suggestedCategory?: ModCategory;
+  suggestedPluginType?: PluginType;
+  error?: string;
 }
 
 export function getStoredNexusApiKey(): string {
@@ -50,12 +66,17 @@ export function clearStoredNexusApiKey(): void {
 }
 
 /**
- * Extracts numeric Mod ID from Nexus URLs:
+ * Extracts numeric Mod ID from Nexus URLs or raw numbers:
  * e.g. https://www.nexusmods.com/skyrimspecialedition/mods/266 -> "266"
+ * e.g. "266" -> "266"
  */
-export function extractNexusModId(url: string): string | null {
-  if (!url) return null;
-  const match = url.match(/\/mods\/([0-9]+)/i);
+export function extractNexusModId(urlOrId: string): string | null {
+  if (!urlOrId) return null;
+  const trimmed = urlOrId.trim();
+  if (/^[0-9]+$/.test(trimmed)) {
+    return trimmed;
+  }
+  const match = trimmed.match(/\/mods\/([0-9]+)/i);
   return match ? match[1] : null;
 }
 
@@ -100,10 +121,9 @@ export async function validateNexusApiKey(apiKey: string): Promise<NexusUserVali
       hourlyRemaining: hourlyRemaining ? parseInt(hourlyRemaining, 10) : undefined,
     };
   } catch (err) {
-    // Browser CORS or Network restriction
     return {
       valid: false,
-      error: `Network or CORS restriction contacting Nexus API: ${err instanceof Error ? err.message : String(err)}. Note: Nexus API requires active Internet access and standard browser headers.`,
+      error: `Network or CORS restriction contacting Nexus API: ${err instanceof Error ? err.message : String(err)}. Note: Nexus API requires active Internet access.`,
     };
   }
 }
@@ -123,7 +143,7 @@ export async function fetchLiveNexusMod(modId: string, apiKey: string): Promise<
     });
 
     if (!res.ok) {
-      return { success: false, error: `HTTP ${res.status}` };
+      return { success: false, error: `HTTP ${res.status}: Failed to fetch mod #${modId}` };
     }
 
     const json = (await res.json()) as NexusModApiResponse;
@@ -131,4 +151,79 @@ export async function fetchLiveNexusMod(modId: string, apiKey: string): Promise<
   } catch (err) {
     return { success: false, error: err instanceof Error ? err.message : String(err) };
   }
+}
+
+/**
+ * Auto-fetch helper that takes a URL or ID, queries Nexus API, and maps fields cleanly for AddModModal
+ */
+export async function autoFetchNexusModDetails(urlOrId: string, apiKey?: string): Promise<NexusAutoFetchResult> {
+  const modId = extractNexusModId(urlOrId);
+  if (!modId) {
+    return { success: false, error: 'Please enter a valid Nexus Mods URL (e.g. https://www.nexusmods.com/skyrimspecialedition/mods/12604) or numeric Mod ID.' };
+  }
+
+  const key = apiKey || getStoredNexusApiKey();
+  if (!key) {
+    return { success: false, error: 'Nexus API Key is missing. Please click the golden key icon in the header to enter your API key.' };
+  }
+
+  const response = await fetchLiveNexusMod(modId, key);
+  if (!response.success || !response.data) {
+    return { success: false, error: response.error || 'Failed to retrieve mod details from Nexus Mods.' };
+  }
+
+  const data = response.data;
+  
+  // Clean description or summary (strip basic bbcode/html if present)
+  let cleanSummary = data.summary || '';
+  if (!cleanSummary && data.description) {
+    cleanSummary = data.description.replace(/<[^>]*>?/gm, '').substring(0, 200) + '...';
+  }
+
+  // Guess category from name or summary
+  let suggestedCategory: ModCategory = 'Other';
+  const text = `${data.name} ${cleanSummary}`.toLowerCase();
+  if (text.includes('skse') || text.includes('framework') || text.includes('library') || text.includes('engine')) {
+    suggestedCategory = 'Framework & Engine';
+  } else if (text.includes('ui') || text.includes('hud') || text.includes('menu') || text.includes('interface')) {
+    suggestedCategory = 'User Interface';
+  } else if (text.includes('combat') || text.includes('animation') || text.includes('movement') || text.includes('dodge')) {
+    suggestedCategory = 'Combat & Animations';
+  } else if (text.includes('quest') || text.includes('land') || text.includes('dungeon') || text.includes('island')) {
+    suggestedCategory = 'Quests & New Lands';
+  } else if (text.includes('weather') || text.includes('shader') || text.includes('texture') || text.includes('mesh') || text.includes('light')) {
+    suggestedCategory = 'Visuals & Shaders';
+  } else if (text.includes('armor') || text.includes('weapon') || text.includes('shield') || text.includes('sword') || text.includes('bow')) {
+    suggestedCategory = 'Armor & Weapons';
+  } else if (text.includes('follower') || text.includes('companion') || text.includes('npc')) {
+    suggestedCategory = 'Followers & NPCs';
+  } else if (text.includes('sound') || text.includes('music') || text.includes('audio') || text.includes('voice')) {
+    suggestedCategory = 'Audio & Music';
+  } else if (text.includes('gameplay') || text.includes('perk') || text.includes('magic') || text.includes('alchemy') || text.includes('overhaul')) {
+    suggestedCategory = 'Gameplay Overhaul';
+  } else if (text.includes('fix') || text.includes('patch') || text.includes('utility')) {
+    suggestedCategory = 'Utilities & Fixes';
+  }
+
+  // Guess plugin type
+  let suggestedPluginType: PluginType = 'ESP Plugin';
+  if (text.includes('.esl') || text.includes('light plugin') || text.includes('esl-flagged')) {
+    suggestedPluginType = 'ESL Light';
+  } else if (text.includes('.esm') || text.includes('master')) {
+    suggestedPluginType = 'ESM Master';
+  } else if (text.includes('skse') || text.includes('dll') || text.includes('plugin')) {
+    suggestedPluginType = 'SKSE Plugin';
+  }
+
+  return {
+    success: true,
+    name: data.name,
+    author: data.author,
+    version: data.version,
+    summary: cleanSummary,
+    nexusUrl: `https://www.nexusmods.com/skyrimspecialedition/mods/${modId}`,
+    imageUrl: data.picture_url,
+    suggestedCategory,
+    suggestedPluginType,
+  };
 }

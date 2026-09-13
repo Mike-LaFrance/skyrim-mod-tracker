@@ -16,7 +16,9 @@ export const INITIAL_MODS: SkyrimMod[] = [
     fileSize: '768 MB',
     description: 'Official expansion introducing the Vampire Lord Volkihar clan, the Dawnguard faction, crossbows, and the Soul Cairn.',
     nexusUrl: 'https://store.steampowered.com/app/489830/The_Elder_Scrolls_V_Skyrim_Special_Edition/',
-    notes: 'Load order master #0000. Required by almost all modern mods.'
+    notes: 'Load order master #0000. Required by almost all modern mods.',
+    imageUrl: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&auto=format&fit=crop&q=80',
+    tags: ['#essential'],
   },
   {
     id: 'mod-dlc-hearthfires',
@@ -32,7 +34,9 @@ export const INITIAL_MODS: SkyrimMod[] = [
     fileSize: '62 MB',
     description: 'Official expansion enabling custom homestead construction, child adoption, and personal crafting stations.',
     nexusUrl: 'https://store.steampowered.com/app/489830/The_Elder_Scrolls_V_Skyrim_Special_Edition/',
-    notes: 'Official master required for building plots and family mechanics.'
+    notes: 'Official master required for building plots and family mechanics.',
+    imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&auto=format&fit=crop&q=80',
+    tags: ['#essential'],
   },
   {
     id: 'mod-dlc-dragonborn',
@@ -48,7 +52,9 @@ export const INITIAL_MODS: SkyrimMod[] = [
     fileSize: '1.45 GB',
     description: 'Official expansion traveling to the island of Solstheim to confront Miraak, the first Dragonborn, featuring Apocrypha realms.',
     nexusUrl: 'https://store.steampowered.com/app/489830/The_Elder_Scrolls_V_Skyrim_Special_Edition/',
-    notes: 'Official DLC master containing Solstheim worldspace.'
+    notes: 'Official DLC master containing Solstheim worldspace.',
+    imageUrl: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600&auto=format&fit=crop&q=80',
+    tags: ['#essential'],
   },
 
   // 0003 - 0007: Creation Club Content
@@ -148,7 +154,9 @@ export const INITIAL_MODS: SkyrimMod[] = [
     fileSize: '325 MB',
     description: 'Comprehensive bug-fixing mod addressing thousands of gameplay, quest, audio, text, and object placement bugs in Skyrim SE.',
     nexusUrl: 'https://www.nexusmods.com/skyrimspecialedition/mods/266',
-    notes: 'Essential master. Must be placed directly after official masters.'
+    notes: 'Essential master. Must be placed directly after official masters.',
+    imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&auto=format&fit=crop&q=80',
+    tags: ['#essential', '#performance'],
   },
   {
     id: 'mod-address-library',
@@ -164,7 +172,8 @@ export const INITIAL_MODS: SkyrimMod[] = [
     fileSize: '1.8 MB',
     description: 'Header database providing game binary memory offsets so native DLL mods can function across varying runtime versions seamlessly.',
     nexusUrl: 'https://www.nexusmods.com/skyrimspecialedition/mods/32444',
-    notes: 'Required prerequisite for almost all modern SKSE DLL plugins.'
+    notes: 'Required prerequisite for almost all modern SKSE DLL plugins.',
+    tags: ['#essential'],
   },
   {
     id: 'mod-sse-engine-fixes',
@@ -310,7 +319,9 @@ export const INITIAL_MODS: SkyrimMod[] = [
     fileSize: '15.6 MB',
     description: 'Definitive PC-optimized inventory, magic, map, barter, and container user interface overhaul complete with the Mod Configuration Menu (MCM).',
     nexusUrl: 'https://www.nexusmods.com/skyrimspecialedition/mods/12604',
-    notes: 'Cornerstone UI foundation for all PC Skyrim modlists.'
+    notes: 'Cornerstone UI foundation for all PC Skyrim modlists.',
+    imageUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&auto=format&fit=crop&q=80',
+    tags: ['#essential', '#visuals'],
   },
   {
     id: 'mod-morehud-se',
@@ -1008,6 +1019,8 @@ export const INITIAL_MODS: SkyrimMod[] = [
     fileSize: '12.4 MB',
     description: 'Bypass the lengthy opening cart ride in Helgen and begin as a ship passenger, dungeon escapee, guild member, or tavern patron.',
     nexusUrl: 'https://www.nexusmods.com/skyrimspecialedition/mods/272',
-    notes: 'Must be placed near the very bottom of the plugin load order.'
+    notes: 'Must be placed near the very bottom of the plugin load order.',
+    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&auto=format&fit=crop&q=80',
+    tags: ['#essential'],
   }
 ];

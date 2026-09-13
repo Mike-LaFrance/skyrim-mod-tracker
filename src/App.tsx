@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Header } from './components/Header';
 import { FilterBar } from './components/FilterBar';
 import { ModItemCard } from './components/ModItemCard';
@@ -9,7 +9,9 @@ import { ImportExportModal } from './components/ImportExportModal';
 import { UpdatesScannerModal } from './components/UpdatesScannerModal';
 import { HelpCenterModal } from './components/HelpCenterModal';
 import { NexusApiKeyModal } from './components/NexusApiKeyModal';
-import { FilterState, SkyrimMod } from './types';
+import { ConflictDiagnosticsModal } from './components/ConflictDiagnosticsModal';
+import { ProfileManagerModal } from './components/ProfileManagerModal';
+import { FilterState, ModProfile, SkyrimMod } from './types';
 import {
   loadMods,
   saveMods,
@@ -17,6 +19,12 @@ import {
   cleanRenumber,
 } from './utils/storage';
 import { getStoredNexusApiKey } from './utils/nexusApi';
+import { evaluateLoadOrderConflicts } from './utils/conflictRules';
+import {
+  loadProfiles,
+  getActiveProfileId,
+  setActiveProfileId as setActiveProfileIdStorage,
+} from './utils/profileStorage';
 import { sound } from './utils/audio';
 import { ShieldCheck, Compass } from 'lucide-react';
 
@@ -27,6 +35,8 @@ export function App() {
     category: 'all',
     pluginType: 'all',
     status: 'all',
+    tagFilter: 'all',
+    showBanners: true,
     sortBy: 'priority',
     sortOrder: 'asc',
     viewMode: 'cards',
@@ -40,11 +50,43 @@ export function App() {
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [isHelpCenterOpen, setIsHelpCenterOpen] = useState(false);
   const [isNexusModalOpen, setIsNexusModalOpen] = useState(false);
+  const [isDiagnosticsOpen, setIsDiagnosticsOpen] = useState(false);
+  const [isProfilesModalOpen, setIsProfilesModalOpen] = useState(false);
+
+  // Profiles & Nexus key state
   const [hasNexusApiKey, setHasNexusApiKey] = useState(() => Boolean(getStoredNexusApiKey()));
+  const [activeProfileId, setActiveProfileId] = useState<string>(() => getActiveProfileId());
+  const [profiles, setProfiles] = useState<ModProfile[]>(() => loadProfiles());
+
+  // Drag and Drop state
+  const [draggedModId, setDraggedModId] = useState<string | null>(null);
+  const [dragTargetId, setDragTargetId] = useState<string | null>(null);
 
   // Sync to localStorage on every state change
   useEffect(() => {
     saveMods(mods);
+  }, [mods]);
+
+  // Active Profile object
+  const activeProfile = useMemo(() => {
+    return profiles.find((p) => p.id === activeProfileId) || profiles[0] || { name: 'Master Loadout' };
+  }, [profiles, activeProfileId]);
+
+  // Conflict Diagnostic Engine calculation
+  const conflictIssues = useMemo(() => evaluateLoadOrderConflicts(mods), [mods]);
+  const conflictMap = useMemo(() => new Map(conflictIssues.map((c) => [c.modId, c])), [conflictIssues]);
+
+  // Engine Plugin Limits (254 ESM/ESP cap & 4096 ESLs)
+  const activeEsmEspCount = useMemo(() => {
+    return mods.filter(
+      (m) =>
+        m.status === 'active' &&
+        (m.pluginType === 'ESM Master' || m.pluginType === 'ESP Plugin' || m.pluginType === 'DLC')
+    ).length;
+  }, [mods]);
+
+  const activeEslCount = useMemo(() => {
+    return mods.filter((m) => m.status === 'active' && m.pluginType === 'ESL Light').length;
   }, [mods]);
 
   // Priority & Load Order Handlers
@@ -54,7 +96,6 @@ export function App() {
       const index = sorted.findIndex((m) => m.id === id);
       if (index <= 0) return prev;
 
-      // Swap priorities with previous mod
       const prevMod = sorted[index - 1];
       const currentMod = sorted[index];
 
@@ -72,7 +113,6 @@ export function App() {
       const index = sorted.findIndex((m) => m.id === id);
       if (index < 0 || index >= sorted.length - 1) return prev;
 
-      // Swap priorities with next mod
       const nextMod = sorted[index + 1];
       const currentMod = sorted[index];
 
@@ -95,6 +135,46 @@ export function App() {
 
   const handleCleanRenumber = () => {
     setMods((prev) => cleanRenumber(prev));
+  };
+
+  // Drag and Drop Handlers
+  const handleDragStart = (e: React.DragEvent, id: string) => {
+    e.dataTransfer.setData('text/plain', id);
+    setDraggedModId(id);
+  };
+
+  const handleDragOver = (e: React.DragEvent, id: string) => {
+    e.preventDefault();
+    if (dragTargetId !== id) {
+      setDragTargetId(id);
+    }
+  };
+
+  const handleDragLeave = () => {
+    setDragTargetId(null);
+  };
+
+  const handleDrop = (e: React.DragEvent, targetId: string) => {
+    e.preventDefault();
+    const sourceId = e.dataTransfer.getData('text/plain') || draggedModId;
+    setDragTargetId(null);
+    setDraggedModId(null);
+
+    if (!sourceId || sourceId === targetId) return;
+
+    setMods((prev) => {
+      const sorted = [...prev].sort((a, b) => a.priority - b.priority);
+      const sourceIndex = sorted.findIndex((m) => m.id === sourceId);
+      const targetIndex = sorted.findIndex((m) => m.id === targetId);
+
+      if (sourceIndex === -1 || targetIndex === -1) return prev;
+
+      const [removed] = sorted.splice(sourceIndex, 1);
+      sorted.splice(targetIndex, 0, removed);
+
+      sound.playSwoosh();
+      return cleanRenumber(sorted);
+    });
   };
 
   // Status Toggles
@@ -177,6 +257,14 @@ export function App() {
     setMods(importedMods);
   };
 
+  // Profile Switching
+  const handleSelectProfile = (p: ModProfile) => {
+    setActiveProfileId(p.id);
+    setActiveProfileIdStorage(p.id);
+    setMods([...p.mods]);
+    setProfiles(loadProfiles());
+  };
+
   // Filter & Sort Logic
   const filteredAndSortedMods = useMemo(() => {
     let result = [...mods];
@@ -191,7 +279,8 @@ export function App() {
           m.description.toLowerCase().includes(q) ||
           m.notes.toLowerCase().includes(q) ||
           m.category.toLowerCase().includes(q) ||
-          m.pluginType.toLowerCase().includes(q)
+          m.pluginType.toLowerCase().includes(q) ||
+          (m.tags && m.tags.some((t) => t.toLowerCase().includes(q)))
       );
     }
 
@@ -203,6 +292,11 @@ export function App() {
     // Plugin Type Filter
     if (filters.pluginType !== 'all') {
       result = result.filter((m) => m.pluginType === filters.pluginType);
+    }
+
+    // Tag Filter
+    if (filters.tagFilter !== 'all') {
+      result = result.filter((m) => m.tags && m.tags.includes(filters.tagFilter));
     }
 
     // Status Filter Chip
@@ -255,6 +349,10 @@ export function App() {
         disabledMods={disabledCount}
         updatesAvailable={updatesCount}
         hasNexusApiKey={hasNexusApiKey}
+        activeEsmEspCount={activeEsmEspCount}
+        activeEslCount={activeEslCount}
+        conflictCount={conflictIssues.length}
+        activeProfileName={activeProfile.name}
         onCheckUpdates={() => setIsScannerOpen(true)}
         onCleanRenumber={handleCleanRenumber}
         onEnableAll={handleEnableAll}
@@ -264,6 +362,8 @@ export function App() {
         onResetDefaults={handleResetDefaults}
         onOpenHelpCenter={() => setIsHelpCenterOpen(true)}
         onOpenNexusApiKey={() => setIsNexusModalOpen(true)}
+        onOpenDiagnostics={() => setIsDiagnosticsOpen(true)}
+        onOpenProfileManager={() => setIsProfilesModalOpen(true)}
       />
 
       {/* Interactive Filter & View Bar */}
@@ -278,13 +378,13 @@ export function App() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 2xl:px-12 py-6">
+      <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 2xl:px-12 py-5 sm:py-6">
         {filteredAndSortedMods.length === 0 ? (
           <div className="py-16 text-center space-y-3 bg-nordic-900/40 rounded-2xl border border-slate-800/80">
             <Compass className="w-12 h-12 text-slate-500 mx-auto animate-pulse-subtle" />
             <h3 className="text-xl font-cinzel font-semibold text-slate-300">No Skyrim Mods Found</h3>
             <p className="text-sm text-slate-400 max-w-md mx-auto">
-              No active or disabled mods matched your current filter criteria. Try resetting search queries or category filters.
+              No active or disabled mods matched your current filter criteria. Try resetting search queries, tag chips, or category filters.
             </p>
             <button
               onClick={() => {
@@ -294,6 +394,8 @@ export function App() {
                   category: 'all',
                   pluginType: 'all',
                   status: 'all',
+                  tagFilter: 'all',
+                  showBanners: filters.showBanners,
                   sortBy: 'priority',
                   sortOrder: 'asc',
                   viewMode: filters.viewMode,
@@ -305,13 +407,15 @@ export function App() {
             </button>
           </div>
         ) : filters.viewMode === 'cards' ? (
-          <div className="space-y-3.5">
+          <div className="space-y-3">
             {filteredAndSortedMods.map((mod, index) => (
               <ModItemCard
                 key={mod.id}
                 mod={mod}
                 isFirst={index === 0}
                 isLast={index === filteredAndSortedMods.length - 1}
+                conflictIssue={conflictMap.get(mod.id)}
+                showBanners={filters.showBanners}
                 onToggleStatus={handleToggleStatus}
                 onMoveUp={handleMoveUp}
                 onMoveDown={handleMoveDown}
@@ -320,12 +424,18 @@ export function App() {
                 onDelete={handleDeleteMod}
                 onMarkUpdated={handleMarkUpdated}
                 onUpdateNotes={handleUpdateNotes}
+                onDragStart={handleDragStart}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                isDragTarget={dragTargetId === mod.id}
               />
             ))}
           </div>
         ) : (
           <ModTableView
             mods={filteredAndSortedMods}
+            conflictIssues={conflictIssues}
             onToggleStatus={handleToggleStatus}
             onMoveUp={handleMoveUp}
             onMoveDown={handleMoveDown}
@@ -333,18 +443,23 @@ export function App() {
             onEdit={handleOpenEdit}
             onDelete={handleDeleteMod}
             onMarkUpdated={handleMarkUpdated}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            dragTargetId={dragTargetId}
           />
         )}
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-900 bg-nordic-950 py-5 text-center text-xs sm:text-sm text-slate-400">
-        <div className="w-full px-4 sm:px-6 lg:px-8 2xl:px-12 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <footer className="border-t border-slate-900 bg-nordic-950 py-4 text-center text-xs sm:text-sm text-slate-400">
+        <div className="w-full px-4 sm:px-6 lg:px-8 2xl:px-12 flex flex-col sm:flex-row items-center justify-between gap-2.5">
           <div className="flex items-center space-x-2 text-slate-300 font-medium">
             <ShieldCheck className="w-4 h-4 text-amber-400" />
-            <span>Skyrim Special Edition &middot; ModOrganizer2 Load Order Standard</span>
+            <span>Skyrim Special Edition &middot; ModOrganizer2 Standard &middot; {activeProfile.name}</span>
           </div>
-          <p className="text-xs sm:text-sm text-slate-500">
+          <p className="text-xs text-slate-500">
             Compatible with SSE Engine Fixes, LOOT sorting conventions, and SKSE64.
           </p>
         </div>
@@ -397,6 +512,20 @@ export function App() {
         isOpen={isNexusModalOpen}
         onClose={() => setIsNexusModalOpen(false)}
         onApiKeyUpdated={(hasKey) => setHasNexusApiKey(hasKey)}
+      />
+
+      <ConflictDiagnosticsModal
+        isOpen={isDiagnosticsOpen}
+        issues={conflictIssues}
+        onClose={() => setIsDiagnosticsOpen(false)}
+      />
+
+      <ProfileManagerModal
+        isOpen={isProfilesModalOpen}
+        activeProfileId={activeProfileId}
+        currentMods={mods}
+        onClose={() => setIsProfilesModalOpen(false)}
+        onSelectProfile={handleSelectProfile}
       />
     </div>
   );

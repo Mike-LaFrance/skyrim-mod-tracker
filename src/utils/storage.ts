@@ -11,7 +11,15 @@ export function loadMods(): SkyrimMod[] {
     }
     const parsed = JSON.parse(data) as SkyrimMod[];
     if (Array.isArray(parsed) && parsed.length > 0) {
-      return parsed;
+      const initialMap = new Map(INITIAL_MODS.map((m) => [m.id, m]));
+      return parsed.map((mod) => {
+        const init = initialMap.get(mod.id);
+        return {
+          ...mod,
+          imageUrl: mod.imageUrl || init?.imageUrl,
+          tags: mod.tags || init?.tags || [],
+        };
+      });
     }
     return [...INITIAL_MODS];
   } catch (err) {
