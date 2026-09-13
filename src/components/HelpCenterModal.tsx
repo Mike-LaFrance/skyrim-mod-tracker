@@ -5,9 +5,6 @@ import {
   BookOpen,
   Server,
   Key,
-  FileCode2,
-  ListOrdered,
-  Sparkles,
   HelpCircle,
   Copy,
   Check,
@@ -16,7 +13,6 @@ import {
   ExternalLink,
   Terminal,
   FolderSync,
-  ShieldAlert,
 } from 'lucide-react';
 import { sound } from '../utils/audio';
 
@@ -28,7 +24,7 @@ interface HelpCenterModalProps {
 
 interface HelpTopic {
   id: string;
-  category: 'getting-started' | 'load-order' | 'nexus-api' | 'mo2' | 'ionos' | 'shortcuts' | 'faq';
+  category: 'getting-started' | 'load-order' | 'nexus-api' | 'mo2' | 'ionos' | 'shortcuts' | 'faq' | 'features';
   title: string;
   summary: string;
   content: React.ReactNode;
@@ -45,6 +41,7 @@ export const HelpCenterModal: React.FC<HelpCenterModalProps> = ({
   const [expandedTopics, setExpandedTopics] = useState<Record<string, boolean>>({
     'ionos-step-by-step': true,
     'nexus-api-setup': true,
+    'nexus-auto-fetch': true,
   });
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
@@ -95,107 +92,311 @@ export const HelpCenterModal: React.FC<HelpCenterModalProps> = ({
                 </button>
               </div>
               <p className="text-xs text-slate-400">
-                This compiles and creates a production-ready <code className="text-amber-300 font-mono">dist/</code> folder containing <code className="font-mono">index.html</code>, the <code className="font-mono">assets/</code> directory, <code className="font-mono">metadata.json</code>, and the pre-configured <code className="font-mono">.htaccess</code> file.
+                This compiles and creates a production-ready <code className="text-amber-300 font-mono">dist/</code> folder containing <code className="font-mono">index.html</code>, the <code className="font-mono">assets/</code> directory, and the pre-configured <code className="font-mono">.htaccess</code> file.
               </p>
             </div>
 
             <div className="bg-nordic-950/90 p-4 rounded-xl border border-slate-800 space-y-2.5">
               <h4 className="font-bold text-amber-300 flex items-center gap-2">
                 <FolderSync className="w-4 h-4" />
-                Step 2: Connect via WinSCP
-              </h4>
-              <ul className="list-disc pl-5 space-y-1 text-xs sm:text-sm text-slate-300">
-                <li><strong>File Protocol:</strong> SFTP (Port 22) or FTP (Port 21).</li>
-                <li><strong>Host Name:</strong> Your IONOS server address (e.g. <code className="font-mono text-amber-300">accessXXXXXXXXX.webspace-data.io</code> or your domain).</li>
-                <li><strong>User Name & Password:</strong> Your IONOS Secure FTP account credentials.</li>
-              </ul>
-            </div>
-
-            <div className="bg-nordic-950/90 p-4 rounded-xl border border-slate-800 space-y-2.5">
-              <h4 className="font-bold text-amber-300 flex items-center gap-2">
-                <Server className="w-4 h-4" />
-                Step 3: Transfer Files to /skyrim-mod-tracker
-              </h4>
-              <p className="text-xs sm:text-sm text-slate-300">
-                In WinSCP, open the folder: <code className="text-amber-300 font-mono">/skyrim-mod-tracker</code>.
-              </p>
-              <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg text-xs sm:text-sm text-amber-200">
-                <strong>Important:</strong> Do NOT upload the <code className="font-mono">dist</code> folder itself. Instead, open the local <code className="font-mono">c:\skyrim-mod-tracker\dist</code> folder on your left pane, select <strong>all files and folders inside it</strong>, and drag them into the remote <code className="font-mono">/skyrim-mod-tracker</code> folder!
-              </div>
-              <p className="text-xs text-slate-400">
-                Your remote folder structure must look like this:
-              </p>
-              <pre className="p-3 rounded-lg bg-nordic-900 border border-slate-800 font-mono text-xs text-slate-300">
-{`/skyrim-mod-tracker/
-├── assets/
-│   ├── index-xxxx.css
-│   └── index-xxxx.js
-├── .htaccess
-├── index.html
-└── metadata.json`}
-              </pre>
-            </div>
-
-            <div className="bg-nordic-950/90 p-4 rounded-xl border border-slate-800 space-y-2.5">
-              <h4 className="font-bold text-amber-300">
-                Step 4: Configure Domain in IONOS Cloud Panel
+                Step 2: Transfer with WinSCP
               </h4>
               <ol className="list-decimal pl-5 space-y-1.5 text-xs sm:text-sm text-slate-300">
-                <li>Log in to your <strong>IONOS Control Panel</strong> (my.ionos.com).</li>
-                <li>Navigate to <strong>Websites & Domains &rarr; Manage Domains</strong>.</li>
                 <li>
-                  Click the gear icon on the domain or subdomain you wish to use (e.g. <code className="text-amber-300 font-mono">tracker.yourdomain.com</code> or <code className="text-amber-300 font-mono">yourdomain.com</code>).
-                </li>
-                <li>Select <strong>Adjust Destination / Edit Target Directory</strong>.</li>
-                <li>
-                  Set the directory to: <code className="text-amber-300 font-mono">/skyrim-mod-tracker</code> and save.
+                  Open <strong>WinSCP</strong> and connect to your IONOS SFTP / FTP session.
                 </li>
                 <li>
-                  Ensure <strong>SSL Certificate</strong> is enabled (IONOS provides free Let's Encrypt / Wildcard certificates with 1 click).
+                  In the <strong>Right Panel (Remote Server)</strong>, open your destination folder:
+                  <code className="block mt-1 font-mono text-amber-300 bg-nordic-900 p-1.5 rounded border border-slate-800">
+                    /skyrim-mod-tracker/
+                  </code>
                 </li>
+                <li>
+                  In the <strong>Left Panel (Local Computer)</strong>, navigate to:
+                  <code className="block mt-1 font-mono text-amber-300 bg-nordic-900 p-1.5 rounded border border-slate-800">
+                    c:\skyrim-mod-tracker\dist\
+                  </code>
+                  <em>(Make sure you are inside the <strong>dist</strong> folder, not the root project folder!)</em>
+                </li>
+                <li>
+                  Select all 3 items inside <code className="font-mono text-amber-300">dist/</code>:
+                  <ul className="list-disc pl-5 mt-1 space-y-0.5 text-slate-400">
+                    <li><strong className="text-slate-200">assets/</strong> (folder)</li>
+                    <li><strong className="text-slate-200">index.html</strong> (file)</li>
+                    <li><strong className="text-slate-200">.htaccess</strong> (hidden file - press <kbd className="px-1 py-0.5 bg-slate-800 rounded text-[11px]">Ctrl + Alt + H</kbd> if hidden)</li>
+                  </ul>
+                </li>
+                <li>
+                  Drag and drop them into the right panel to overwrite the remote folder.
+                </li>
+              </ol>
+            </div>
+
+            <div className="bg-nordic-950/90 p-4 rounded-xl border border-slate-800 space-y-2 text-xs sm:text-sm text-slate-300">
+              <h4 className="font-bold text-amber-300">Step 3: Access in Your Web Browser</h4>
+              <p>
+                Navigate to:
+              </p>
+              <code className="block p-2 rounded bg-nordic-900 border border-slate-800 text-amber-300 font-mono">
+                https://yourdomain.com/skyrim-mod-tracker/
+              </code>
+              <p className="text-xs text-slate-400">
+                The assets were specifically bundled with relative paths (<code className="text-amber-300">base: './'</code>), so the application runs seamlessly out of any subfolder without 404 script errors!
+              </p>
+            </div>
+          </div>
+        ),
+      },
+
+      // 7 NEW ADVANCED FEATURES:
+
+      // Feature 1: Nexus 1-Click Auto-Fetch
+      {
+        id: 'nexus-auto-fetch',
+        category: 'features',
+        title: '⚡ 1-Click Nexus Auto-Fetch on Add Mod',
+        summary: 'Paste any Nexus Mods link or Mod ID to instantly auto-fill title, author, version, summary, and artwork.',
+        keywords: ['nexus', 'auto-fetch', 'fetch', 'url', 'mod id', 'add mod', 'automatic', 'metadata', 'artwork'],
+        content: (
+          <div className="space-y-3.5 text-xs sm:text-sm text-slate-200 leading-relaxed">
+            <p>
+              Adding new mods is completely effortless with the connected Nexus API. Instead of typing metadata manually:
+            </p>
+            <div className="bg-nordic-950/90 p-4 rounded-xl border border-slate-800 space-y-2">
+              <h4 className="font-bold text-amber-300">How to use Auto-Fetch:</h4>
+              <ol className="list-decimal pl-5 space-y-1.5 text-slate-300">
+                <li>Click the <strong>"Add Mod"</strong> button in the top header.</li>
+                <li>In the top <em>Nexus 1-Click Auto-Fetch</em> bar, paste any Nexus URL (e.g. <code className="font-mono text-amber-300">https://www.nexusmods.com/skyrimspecialedition/mods/12604</code>) or just the numeric Mod ID (<code className="font-mono text-amber-300">12604</code>).</li>
+                <li>Click the golden <strong>"Auto-Fetch"</strong> button.</li>
+                <li>The engine contacts Nexus Mods and instantly populates:
+                  <ul className="list-disc pl-5 mt-1 text-slate-400 space-y-0.5">
+                    <li>Official Mod Title</li>
+                    <li>Author Name</li>
+                    <li>Installed & Latest Version Numbers</li>
+                    <li>In-Game Overview & Description Summary</li>
+                    <li>Intelligently inferred Category and Plugin Type</li>
+                    <li>Official Hero Artwork / Thumbnail banner URL</li>
+                  </ul>
+                </li>
+                <li>Review the priority and click <strong>"Register Mod"</strong>!</li>
               </ol>
             </div>
           </div>
         ),
       },
 
-      // Nexus Mods API Integration Guide
+      // Feature 2: 254 Plugin Engine Limit Gauge
+      {
+        id: 'engine-plugin-limit',
+        category: 'features',
+        title: '🛡️ Skyrim Engine Plugin Limit: 254 ESM/ESP Cap & 4,096 ESLs',
+        summary: 'Understanding the Skyrim SE 254 master plugin crash barrier, ESL light flags, and the real-time header gauge.',
+        keywords: ['engine', 'limit', '254', 'cap', 'esm', 'esp', 'esl', 'light', 'crash', 'gauge', 'slots', '0xfe'],
+        content: (
+          <div className="space-y-3.5 text-xs sm:text-sm text-slate-200 leading-relaxed">
+            <p>
+              Skyrim Special Edition&apos;s engine uses hexadecimal indices (<code className="text-amber-300 font-mono">0x00</code> to <code className="text-amber-300 font-mono">0xFF</code>) to assign form IDs in memory.
+            </p>
+            <div className="bg-nordic-950/90 p-4 rounded-xl border border-slate-800 space-y-2">
+              <h4 className="font-bold text-amber-300">The 254 Hard Engine Cap:</h4>
+              <ul className="list-disc pl-5 space-y-1 text-slate-300">
+                <li>Slots <code className="text-amber-300 font-mono">0x00</code> through <code className="text-amber-300 font-mono">0xFD</code> are reserved for full <strong className="text-slate-100">.esm</strong> and <strong className="text-slate-100">.esp</strong> master plugins (maximum 254 total).</li>
+                <li>Activating more than 254 full plugins causes an <strong>immediate engine crash (CTD)</strong> upon launching Skyrim.</li>
+                <li>Slot <code className="text-cyan-300 font-mono">0xFE</code> is the Light Plugin Container (<strong className="text-cyan-300">.esl</strong>). ESL plugins do <em>not</em> count toward the 254 limit and you can run up to <strong>4,096</strong> of them simultaneously!</li>
+              </ul>
+            </div>
+            <div className="bg-nordic-950/90 p-4 rounded-xl border border-slate-800 space-y-2">
+              <h4 className="font-bold text-amber-300">The Real-Time Engine Cap Gauge:</h4>
+              <p className="text-slate-300">
+                In the top header, the <strong>Engine Cap gauge</strong> continuously computes your active ESM and ESP plugins:
+              </p>
+              <ul className="list-disc pl-5 space-y-1 text-slate-400">
+                <li><span className="text-emerald-400 font-bold">Green (&lt; 200)</span>: Safe zone with ample room for additional mods.</li>
+                <li><span className="text-amber-400 font-bold">Amber (200 - 244)</span>: Caution zone; begin flagging patch ESPs as ESL in SSEEdit.</li>
+                <li><span className="text-red-400 font-bold">Red (245 - 254)</span>: Danger zone; imminent game crashes if additional ESPs are enabled.</li>
+              </ul>
+            </div>
+          </div>
+        ),
+      },
+
+      // Feature 3: Conflict Diagnostics Engine
+      {
+        id: 'conflict-diagnostics',
+        category: 'features',
+        title: '⚠️ Load Order Diagnostics & Compatibility Rules Engine',
+        summary: 'How the built-in diagnostic rule engine detects placement errors, missing SKSE dependencies, and patch advisories.',
+        keywords: ['diagnostics', 'conflict', 'loot', 'alternate start', 'lux', 'caco', 'ordinator', 'address library', 'warning', 'order'],
+        content: (
+          <div className="space-y-3.5 text-xs sm:text-sm text-slate-200 leading-relaxed">
+            <p>
+              The application features a built-in automated rules evaluator modeled after <strong>LOOT (Load Order Optimization Tool)</strong> standards:
+            </p>
+            <div className="bg-nordic-950/90 p-4 rounded-xl border border-slate-800 space-y-2">
+              <h4 className="font-bold text-amber-300">Automated Rules Checked in Real Time:</h4>
+              <ul className="list-disc pl-5 space-y-1 text-slate-300">
+                <li><strong>Alternate Start Placement:</strong> Warns if "Alternate Start - Live Another Life" is placed too high. It must load near the bottom so it can properly override quest starting scripts.</li>
+                <li><strong>Lux / Lighting Placement:</strong> Ensures interior lighting overhauls like Lux load after weather mods (e.g. Cathedral Weathers) so lighting templates are preserved.</li>
+                <li><strong>Address Library for SKSE:</strong> Flags critical errors if DLL mods (PO3 Tweaks, Precision, TrueHUD) are active while Address Library is missing, disabled, or loaded after them.</li>
+                <li><strong>Perk Overhaul Patches:</strong> Advises installing the official compatibility patch if CACO (Complete Alchemy & Cooking Overhaul) and Ordinator are detected simultaneously.</li>
+                <li><strong>Official DLC Sequence:</strong> Validates Dawnguard (#0000) &rarr; HearthFires (#0001) &rarr; Dragonborn (#0002) at the top of your load order.</li>
+                <li><strong>Duplicate Priorities:</strong> Flags any mods sharing the exact same priority index.</li>
+              </ul>
+            </div>
+            <p className="text-slate-400">
+              Click the <strong>"Diagnostics"</strong> button in the header (which glows amber when issues exist) to view detailed recommendations and fixes.
+            </p>
+          </div>
+        ),
+      },
+
+      // Feature 4: Mod Profiles & Loadout Presets
+      {
+        id: 'mod-profiles-guide',
+        category: 'features',
+        title: '📂 Mod Profiles & Loadout Presets (Vanilla+, Survival, Graphics)',
+        summary: 'Switch between gameplay setups in 1 click, save custom presets, and export profiles.',
+        keywords: ['profiles', 'presets', 'loadout', 'vanilla+', 'survival', 'graphics', 'switch', 'save', 'export'],
+        content: (
+          <div className="space-y-3.5 text-xs sm:text-sm text-slate-200 leading-relaxed">
+            <p>
+              Mod Profiles let you maintain different character builds and testing setups without losing your custom priority order:
+            </p>
+            <div className="bg-nordic-950/90 p-4 rounded-xl border border-slate-800 space-y-2">
+              <h4 className="font-bold text-amber-300">Pre-Configured Presets:</h4>
+              <ul className="list-disc pl-5 space-y-1.5 text-slate-300">
+                <li><strong className="text-slate-100">Full Master Loadout (62 Mods)</strong>: Complete setup with quests, combat, shaders, and followers.</li>
+                <li><strong className="text-slate-100">Vanilla+ Core Stability</strong>: Lightweight setup activating only core DLCs, SKSE utilities, Address Library, and SkyUI.</li>
+                <li><strong className="text-slate-100">Hardcore Survival & Roleplay</strong>: Tailored build around Survival Mode, CACO alchemy, Ordinator perks, and Inigo.</li>
+                <li><strong className="text-slate-100">Graphics & Visual Showcase</strong>: Pure graphical fidelity focusing on Community Shaders, Lux, Cathedral Weathers, and SMIM.</li>
+              </ul>
+            </div>
+            <div className="bg-nordic-950/90 p-4 rounded-xl border border-slate-800 space-y-2 text-slate-300">
+              <h4 className="font-bold text-amber-300">Managing Profiles:</h4>
+              <p>
+                Click the <strong>Profiles</strong> button in the top header toolbar to activate any profile, save your current setup as a new custom loadout, duplicate existing presets, or export profiles to standalone <code className="text-amber-300 font-mono">.json</code> files.
+              </p>
+            </div>
+          </div>
+        ),
+      },
+
+      // Feature 5: Drag and Drop Reordering
+      {
+        id: 'drag-and-drop-guide',
+        category: 'features',
+        title: '🖐️ Smooth Drag-and-Drop Load Order Reordering',
+        summary: 'Grab any card or table row handle to reposition mods dynamically with automatic sequential renumbering.',
+        keywords: ['drag', 'drop', 'reorder', 'grip', 'handle', 'priority', 'move', 'mouse'],
+        content: (
+          <div className="space-y-3.5 text-xs sm:text-sm text-slate-200 leading-relaxed">
+            <p>
+              In addition to clicking arrow buttons and typing numeric priority indices, you can visually drag and drop mods anywhere in your load order:
+            </p>
+            <div className="bg-nordic-950/90 p-4 rounded-xl border border-slate-800 space-y-2">
+              <h4 className="font-bold text-amber-300">How to Drag & Drop:</h4>
+              <ol className="list-decimal pl-5 space-y-1.5 text-slate-300">
+                <li>Locate the <strong>Grip Handle</strong> (<code className="text-amber-300 font-mono">:::</code>) on the far-left of any mod card or table row.</li>
+                <li>Click and hold to pick up the mod.</li>
+                <li>Drag it up or down to your desired target position. A golden highlight line indicates the landing spot.</li>
+                <li>Release the mouse button. The list automatically shifts positions, cleanly renumbers all priorities sequentially (0, 1, 2... N), and plays a procedural reorder swoosh sound!</li>
+              </ol>
+            </div>
+          </div>
+        ),
+      },
+
+      // Feature 6: Custom Tags & Suspect Flags
+      {
+        id: 'custom-tags-guide',
+        category: 'features',
+        title: '🏷️ Custom Tags & Suspect Flags (#crash-suspect, #needs-patch)',
+        summary: 'Tag mods for crash isolation, testing, or patch tracking, and filter your modlist by tag in the FilterBar.',
+        keywords: ['tags', 'crash-suspect', 'needs-patch', 'essential', 'script-heavy', 'testing', 'filter', 'chips'],
+        content: (
+          <div className="space-y-3.5 text-xs sm:text-sm text-slate-200 leading-relaxed">
+            <p>
+              Tags provide rapid organization and troubleshooting flags across your load order:
+            </p>
+            <div className="bg-nordic-950/90 p-4 rounded-xl border border-slate-800 space-y-2">
+              <h4 className="font-bold text-amber-300">Built-in Predefined Tags:</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                <div className="p-2 rounded bg-nordic-900 border border-slate-800"><span className="text-amber-300 font-mono font-bold">#essential</span> &mdash; Core mod indispensable to your playthrough</div>
+                <div className="p-2 rounded bg-nordic-900 border border-slate-800"><span className="text-red-300 font-mono font-bold">#crash-suspect</span> &mdash; Suspected cause of game CTD crashes during testing</div>
+                <div className="p-2 rounded bg-nordic-900 border border-slate-800"><span className="text-orange-300 font-mono font-bold">#needs-patch</span> &mdash; Mod requiring an official compatibility patch</div>
+                <div className="p-2 rounded bg-nordic-900 border border-slate-800"><span className="text-purple-300 font-mono font-bold">#script-heavy</span> &mdash; Mod running intense Papyrus scripts</div>
+                <div className="p-2 rounded bg-nordic-900 border border-slate-800"><span className="text-cyan-300 font-mono font-bold">#testing</span> &mdash; Newly installed mod under current observation</div>
+                <div className="p-2 rounded bg-nordic-900 border border-slate-800"><span className="text-emerald-300 font-mono font-bold">#visuals</span> &mdash; Textures, meshes, or shader assets</div>
+              </div>
+            </div>
+            <div className="bg-nordic-950/90 p-4 rounded-xl border border-slate-800 space-y-2 text-slate-300">
+              <h4 className="font-bold text-amber-300">Filtering by Tag:</h4>
+              <p>
+                In the FilterBar, select any tag from the <strong>"All Tags"</strong> dropdown to instantly isolate only those mods (e.g. view only <code className="text-red-300">#crash-suspect</code> mods when tracking down crashes).
+              </p>
+            </div>
+          </div>
+        ),
+      },
+
+      // Feature 7: Artwork Banners
+      {
+        id: 'artwork-banners-guide',
+        category: 'features',
+        title: '🖼️ Cinematic Artwork Banners & Display Toggle',
+        summary: 'Display official Nexus hero artwork on mod cards and toggle banners on or off in the FilterBar.',
+        keywords: ['banners', 'artwork', 'images', 'thumbnail', 'gallery', 'toggle', 'visuals'],
+        content: (
+          <div className="space-y-3.5 text-xs sm:text-sm text-slate-200 leading-relaxed">
+            <p>
+              Each mod card can render an atmospheric hero artwork banner with a subtle Nordic gradient vignette:
+            </p>
+            <div className="bg-nordic-950/90 p-4 rounded-xl border border-slate-800 space-y-2 text-slate-300">
+              <h4 className="font-bold text-amber-300">Adding Artwork:</h4>
+              <p>
+                When using Nexus Auto-Fetch, the official Nexus mod picture is automatically captured. You can also paste any custom image URL inside the <strong>Add Mod</strong> or <strong>Edit Mod</strong> modal.
+              </p>
+            </div>
+            <div className="bg-nordic-950/90 p-4 rounded-xl border border-slate-800 space-y-2 text-slate-300">
+              <h4 className="font-bold text-amber-300">Toggle Banners On / Off:</h4>
+              <p>
+                In the FilterBar beside the view switcher, click the <strong>"Banners: On/Off"</strong> button. If you prefer ultra-compact cards or are browsing on a mobile device, toggling banners off provides an ultra-slim layout.
+              </p>
+            </div>
+          </div>
+        ),
+      },
+
+      // Nexus API Setup Instructions
       {
         id: 'nexus-api-setup',
         category: 'nexus-api',
-        title: 'Connecting Nexus Mods API for Live Updates',
-        summary: 'Generate and configure your free Nexus Mods Personal API Key for real-time version audits.',
-        keywords: ['nexus', 'api', 'key', 'token', 'updates', 'rate limit', 'mod id', 'automatic'],
+        title: 'Connecting Your Nexus Mods Personal API Key',
+        summary: 'How to obtain your free personal API key and connect it for live version checking.',
+        keywords: ['nexus', 'api', 'key', 'token', 'updates', 'scanner', 'validate', 'quota'],
         content: (
-          <div className="space-y-4 text-slate-200 text-xs sm:text-sm">
-            <p className="leading-relaxed">
-              By connecting your personal Nexus Mods API key, you unlock direct, live version querying from the Nexus Mods database for Skyrim Special Edition.
+          <div className="space-y-3.5 text-xs sm:text-sm text-slate-200 leading-relaxed">
+            <p>
+              Connecting your personal Nexus Mods API key allows the application to check your installed mod versions against the live Nexus database and auto-fill metadata when adding mods.
             </p>
 
             <div className="bg-nordic-950/90 p-4 rounded-xl border border-slate-800 space-y-2.5">
-              <h4 className="font-bold text-amber-300">How to obtain your Free Personal API Key:</h4>
-              <ol className="list-decimal pl-5 space-y-2 text-slate-300">
+              <h4 className="font-bold text-amber-300 flex items-center gap-2">
+                <Key className="w-4 h-4" />
+                How to Generate Your API Key (Free):
+              </h4>
+              <ol className="list-decimal pl-5 space-y-1.5 text-slate-300">
                 <li>
-                  Open your browser and sign into your account on{' '}
-                  <a
-                    href="https://www.nexusmods.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-amber-400 underline font-semibold inline-flex items-center gap-1"
-                  >
-                    NexusMods.com <ExternalLink className="w-3 h-3" />
-                  </a>.
-                </li>
-                <li>
-                  Go to <strong>Site Preferences &rarr; API Tab</strong> (or visit{' '}
+                  Go to{' '}
                   <a
                     href="https://www.nexusmods.com/users/myaccount?tab=api"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-amber-400 underline font-semibold inline-flex items-center gap-1"
+                    className="text-amber-400 hover:text-amber-300 underline font-semibold inline-flex items-center gap-1"
                   >
-                    nexusmods.com/users/myaccount?tab=api <ExternalLink className="w-3 h-3" />
-                  </a>).
+                    <span>Nexus Mods Account &rarr; API Settings</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
                 </li>
                 <li>
                   Scroll to the section labeled <strong>Personal API Key</strong>.
@@ -204,7 +405,7 @@ export const HelpCenterModal: React.FC<HelpCenterModalProps> = ({
                   Click the <strong>"Generate API Key"</strong> button and copy the generated key string.
                 </li>
                 <li>
-                  Return to this app, click the <strong>"Nexus API Key"</strong> button in the top header, paste the key, and click <strong>"Validate & Save"</strong>.
+                  Return to this app, click the <strong>"Nexus API"</strong> button in the top header, paste the key, and click <strong>"Validate & Save"</strong>.
                 </li>
               </ol>
             </div>
@@ -251,9 +452,10 @@ export const HelpCenterModal: React.FC<HelpCenterModalProps> = ({
                 Every mod displays an indexed 4-digit badge (e.g. <code className="font-mono text-amber-300">#0000</code>, <code className="font-mono text-amber-300">#0018</code>).
               </p>
               <ul className="list-disc pl-5 space-y-1 text-slate-300">
+                <li><strong>Drag & Drop:</strong> Grab the grip handle to reposition any mod instantly.</li>
                 <li><strong>Swap Up / Down:</strong> Use the arrow buttons beside the priority badge to swap positions with adjacent mods.</li>
                 <li><strong>Direct Type-to-Jump:</strong> Click directly on the priority badge itself to type a specific priority index (e.g. type <code className="font-mono text-amber-300">25</code> and press Enter to jump to position 25).</li>
-                <li><strong>Clean Renumber:</strong> If gaps appear after deletions or reordering, click the <strong>"Clean Renumber"</strong> button in the header to re-index all mods sequentially (0, 1, 2... N) without any gaps.</li>
+                <li><strong>Clean Renumber:</strong> If gaps appear after deletions or reordering, click the <strong>"Renumber"</strong> button in the header to re-index all mods sequentially (0, 1, 2... N) without any gaps.</li>
               </ul>
             </div>
 
@@ -354,7 +556,7 @@ export const HelpCenterModal: React.FC<HelpCenterModalProps> = ({
             <div className="space-y-1">
               <h5 className="font-bold text-amber-300">Will I lose my load order if I close the browser?</h5>
               <p className="text-slate-300">
-                No. Everything is saved in real-time to your browser's HTML5 <code className="text-amber-300">localStorage</code>. When you refresh or reopen the page, your exact priorities and notes will be restored.
+                No. Everything is saved in real-time to your browser's HTML5 <code className="text-amber-300">localStorage</code>. When you refresh or reopen the page, your exact priorities, custom profiles, and notes are restored.
               </p>
             </div>
 
@@ -408,7 +610,7 @@ export const HelpCenterModal: React.FC<HelpCenterModalProps> = ({
                 Elder Scrolls Codex & Help Center
               </h2>
               <p className="text-xs sm:text-sm text-slate-400">
-                Guides, Nexus API Instructions, MO2 Rules & IONOS Webspace Deployment
+                Guides, Feature Reference, Nexus API, Diagnostics, MO2 Rules & IONOS Webspace Deployment
               </p>
             </div>
           </div>
@@ -432,7 +634,7 @@ export const HelpCenterModal: React.FC<HelpCenterModalProps> = ({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search help topics (e.g. 'IONOS', 'WinSCP', 'Nexus API', 'Priority', 'MO2')..."
+              placeholder="Search help topics (e.g. 'Auto-Fetch', '254 Limit', 'Diagnostics', 'Profiles', 'IONOS', 'WinSCP')..."
               className="w-full pl-11 pr-10 py-2.5 bg-nordic-900 border border-slate-700/80 focus:border-amber-500/80 rounded-xl text-sm sm:text-base text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-amber-400"
             />
             {searchQuery && (
@@ -449,6 +651,7 @@ export const HelpCenterModal: React.FC<HelpCenterModalProps> = ({
           <div className="flex flex-wrap items-center gap-1.5 pt-1">
             {[
               { id: 'all', label: 'All Topics' },
+              { id: 'features', label: '⚡ Advanced Features' },
               { id: 'ionos', label: 'IONOS Deployment' },
               { id: 'nexus-api', label: 'Nexus API Setup' },
               { id: 'load-order', label: 'Load Order Rules' },
@@ -462,10 +665,10 @@ export const HelpCenterModal: React.FC<HelpCenterModalProps> = ({
                   sound.playClick();
                   setActiveCategory(cat.id);
                 }}
-                className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                   activeCategory === cat.id
-                    ? 'bg-amber-500 text-nordic-950 shadow-gold-glow'
-                    : 'bg-nordic-800 text-slate-300 hover:text-white hover:bg-nordic-750 border border-slate-700/60'
+                    ? 'bg-amber-500 text-nordic-950 font-bold shadow-gold-glow'
+                    : 'bg-nordic-900 text-slate-300 hover:text-white border border-slate-750'
                 }`}
               >
                 {cat.label}
@@ -474,46 +677,49 @@ export const HelpCenterModal: React.FC<HelpCenterModalProps> = ({
           </div>
         </div>
 
-        {/* Topics Accordion List */}
-        <div className="p-6 overflow-y-auto space-y-4 flex-1">
+        {/* Scrollable Topics Content */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
           {filteredTopics.length === 0 ? (
-            <div className="py-12 text-center text-slate-400 space-y-2">
+            <div className="py-12 text-center space-y-2">
               <HelpCircle className="w-10 h-10 text-slate-500 mx-auto" />
-              <p className="font-semibold text-slate-300">No help topics matched your search "{searchQuery}"</p>
-              <p className="text-xs text-slate-500">Try searching for keywords like "IONOS", "Nexus", "Priority", or "CSV".</p>
+              <h3 className="text-base font-cinzel font-bold text-slate-300">No Help Topics Found</h3>
+              <p className="text-xs text-slate-400">
+                No articles matched &quot;{searchQuery}&quot;. Try searching for &quot;Auto-Fetch&quot;, &quot;254&quot;, &quot;Profiles&quot;, or &quot;IONOS&quot;.
+              </p>
             </div>
           ) : (
             filteredTopics.map((topic) => {
               const isExpanded = Boolean(expandedTopics[topic.id]);
-
               return (
                 <div
                   key={topic.id}
-                  className="rounded-xl border border-slate-800 bg-nordic-950/60 overflow-hidden transition-all hover:border-slate-700"
+                  className="rounded-xl border border-slate-800 bg-nordic-950/80 hover:border-slate-700 transition-all overflow-hidden"
                 >
+                  {/* Topic Title Accordion Trigger */}
                   <button
                     onClick={() => toggleTopic(topic.id)}
-                    className="w-full p-4 sm:p-5 flex items-center justify-between text-left hover:bg-nordic-850/60 transition-colors"
+                    className="w-full px-5 py-4 flex items-center justify-between text-left group cursor-pointer"
                   >
                     <div className="space-y-1 pr-4">
                       <div className="flex items-center space-x-2">
-                        {topic.category === 'ionos' && <Server className="w-4 h-4 text-cyan-400" />}
-                        {topic.category === 'nexus-api' && <Key className="w-4 h-4 text-amber-400" />}
-                        {topic.category === 'load-order' && <ListOrdered className="w-4 h-4 text-emerald-400" />}
-                        {topic.category === 'mo2' && <FileCode2 className="w-4 h-4 text-purple-400" />}
-                        {topic.category === 'shortcuts' && <Sparkles className="w-4 h-4 text-yellow-400" />}
-                        {topic.category === 'faq' && <HelpCircle className="w-4 h-4 text-blue-400" />}
-                        <h3 className="font-bold text-base sm:text-lg text-slate-100">{topic.title}</h3>
+                        <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 uppercase">
+                          {topic.category}
+                        </span>
+                        <h3 className="text-base sm:text-lg font-cinzel font-bold text-slate-100 group-hover:text-amber-300 transition-colors">
+                          {topic.title}
+                        </h3>
                       </div>
-                      <p className="text-xs sm:text-sm text-slate-400 pl-6">{topic.summary}</p>
+                      <p className="text-xs sm:text-sm text-slate-400">{topic.summary}</p>
                     </div>
-                    <div className="p-1 rounded-lg text-slate-400">
-                      {isExpanded ? <ChevronUp className="w-5 h-5 text-amber-400" /> : <ChevronDown className="w-5 h-5" />}
+
+                    <div className="p-1 rounded-lg bg-nordic-900 text-slate-400 group-hover:text-white flex-shrink-0">
+                      {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
                     </div>
                   </button>
 
+                  {/* Topic Detailed Content */}
                   {isExpanded && (
-                    <div className="px-5 pb-5 pt-2 border-t border-slate-800/80 bg-nordic-900/40 text-sm">
+                    <div className="px-5 pb-5 pt-2 border-t border-slate-800/80 text-xs sm:text-sm animate-fade-in">
                       {topic.content}
                     </div>
                   )}
@@ -523,18 +729,18 @@ export const HelpCenterModal: React.FC<HelpCenterModalProps> = ({
           )}
         </div>
 
-        {/* Modal Footer */}
+        {/* Footer */}
         <div className="px-6 py-4 border-t border-slate-800 bg-nordic-950 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
-          <div className="flex items-center space-x-2">
-            <ShieldAlert className="w-4 h-4 text-amber-400" />
-            <span>Need more help? Check the repository README or consult the Skyrim modding community.</span>
+          <div className="flex items-center space-x-2 text-slate-300">
+            <Server className="w-4 h-4 text-amber-400" />
+            <span>Target Webspace: <code className="text-amber-300 font-mono">/skyrim-mod-tracker</code></span>
           </div>
           <button
             onClick={() => {
               sound.playClick();
               onClose();
             }}
-            className="px-5 py-2 rounded-xl font-bold bg-nordic-800 hover:bg-nordic-750 text-slate-200 border border-slate-700 text-xs sm:text-sm transition-colors"
+            className="px-5 py-2 rounded-lg font-bold bg-amber-500 hover:bg-amber-400 text-nordic-950 shadow-gold-glow transition-all"
           >
             Close Codex
           </button>
