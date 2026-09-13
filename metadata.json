@@ -1,0 +1,7 @@
+{
+  "name": "Skyrim Mod Organizer & Load Order Tracker",
+  "version": "1.0.0",
+  "description": "Production-ready Skyrim Special Edition load order manager, Nexus version tracker, and ModOrganizer2 compatible import/export utility.",
+  "author": "Antigravity",
+  "license": "MIT"
+}
