@@ -7,6 +7,8 @@ import { AddModModal } from './components/AddModModal';
 import { EditModModal } from './components/EditModModal';
 import { ImportExportModal } from './components/ImportExportModal';
 import { UpdatesScannerModal } from './components/UpdatesScannerModal';
+import { HelpCenterModal } from './components/HelpCenterModal';
+import { NexusApiKeyModal } from './components/NexusApiKeyModal';
 import { FilterState, SkyrimMod } from './types';
 import {
   loadMods,
@@ -14,6 +16,7 @@ import {
   resetModsToDefault,
   cleanRenumber,
 } from './utils/storage';
+import { getStoredNexusApiKey } from './utils/nexusApi';
 import { sound } from './utils/audio';
 import { ShieldCheck, Compass } from 'lucide-react';
 
@@ -35,6 +38,9 @@ export function App() {
   const [editingMod, setEditingMod] = useState<SkyrimMod | null>(null);
   const [isImportExportOpen, setIsImportExportOpen] = useState(false);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const [isHelpCenterOpen, setIsHelpCenterOpen] = useState(false);
+  const [isNexusModalOpen, setIsNexusModalOpen] = useState(false);
+  const [hasNexusApiKey, setHasNexusApiKey] = useState(() => Boolean(getStoredNexusApiKey()));
 
   // Sync to localStorage on every state change
   useEffect(() => {
@@ -248,6 +254,7 @@ export function App() {
         activeMods={activeCount}
         disabledMods={disabledCount}
         updatesAvailable={updatesCount}
+        hasNexusApiKey={hasNexusApiKey}
         onCheckUpdates={() => setIsScannerOpen(true)}
         onCleanRenumber={handleCleanRenumber}
         onEnableAll={handleEnableAll}
@@ -255,6 +262,8 @@ export function App() {
         onOpenImportExport={() => setIsImportExportOpen(true)}
         onOpenAddMod={() => setIsAddModalOpen(true)}
         onResetDefaults={handleResetDefaults}
+        onOpenHelpCenter={() => setIsHelpCenterOpen(true)}
+        onOpenNexusApiKey={() => setIsNexusModalOpen(true)}
       />
 
       {/* Interactive Filter & View Bar */}
@@ -372,6 +381,22 @@ export function App() {
         onClose={() => setIsScannerOpen(false)}
         onUpdateAll={handleUpdateAll}
         onUpdateSingle={handleMarkUpdated}
+        onOpenNexusApiKeyModal={() => setIsNexusModalOpen(true)}
+      />
+
+      <HelpCenterModal
+        isOpen={isHelpCenterOpen}
+        onClose={() => setIsHelpCenterOpen(false)}
+        onOpenNexusModal={() => {
+          setIsHelpCenterOpen(false);
+          setIsNexusModalOpen(true);
+        }}
+      />
+
+      <NexusApiKeyModal
+        isOpen={isNexusModalOpen}
+        onClose={() => setIsNexusModalOpen(false)}
+        onApiKeyUpdated={(hasKey) => setHasNexusApiKey(hasKey)}
       />
     </div>
   );

@@ -8,9 +8,12 @@ import {
   Check,
   RefreshCw,
   ExternalLink,
+  Key,
+  ShieldCheck,
 } from 'lucide-react';
 import { SkyrimMod } from '../types';
 import { sound } from '../utils/audio';
+import { getStoredNexusApiKey } from '../utils/nexusApi';
 
 interface UpdatesScannerModalProps {
   isOpen: boolean;
@@ -18,6 +21,7 @@ interface UpdatesScannerModalProps {
   onClose: () => void;
   onUpdateAll: () => void;
   onUpdateSingle: (id: string) => void;
+  onOpenNexusApiKeyModal?: () => void;
 }
 
 export const UpdatesScannerModal: React.FC<UpdatesScannerModalProps> = ({
@@ -26,11 +30,13 @@ export const UpdatesScannerModal: React.FC<UpdatesScannerModalProps> = ({
   onClose,
   onUpdateAll,
   onUpdateSingle,
+  onOpenNexusApiKeyModal,
 }) => {
   const [isScanning, setIsScanning] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentScanningName, setCurrentScanningName] = useState('');
   const [scanComplete, setScanComplete] = useState(false);
+  const hasApiKey = Boolean(getStoredNexusApiKey());
 
   const startScan = () => {
     setIsScanning(true);
@@ -78,7 +84,19 @@ export const UpdatesScannerModal: React.FC<UpdatesScannerModalProps> = ({
           <div className="flex items-center space-x-3">
             <Sparkles className="w-6 h-6 text-amber-400 animate-spin-slow" />
             <div>
-              <h2 className="text-xl sm:text-2xl font-cinzel font-bold text-amber-200">Nexus Version Auditor</h2>
+              <div className="flex items-center space-x-2">
+                <h2 className="text-xl sm:text-2xl font-cinzel font-bold text-amber-200">Nexus Version Auditor</h2>
+                {hasApiKey ? (
+                  <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-950/80 border border-emerald-600/50 text-emerald-400 flex items-center gap-1">
+                    <ShieldCheck className="w-3 h-3" />
+                    API CONNECTED
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-950/80 border border-amber-600/50 text-amber-400">
+                    CATALOG AUDIT
+                  </span>
+                )}
+              </div>
               <p className="text-xs sm:text-sm text-slate-400">Auditing active Skyrim load order against Nexus releases</p>
             </div>
           </div>
@@ -95,6 +113,24 @@ export const UpdatesScannerModal: React.FC<UpdatesScannerModalProps> = ({
 
         {/* Modal Body */}
         <div className="p-6 overflow-y-auto space-y-5 text-sm">
+          {/* Nexus API Status Ribbon */}
+          {!hasApiKey && onOpenNexusApiKeyModal && (
+            <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-center justify-between text-xs sm:text-sm text-amber-200">
+              <div className="flex items-center space-x-2">
+                <Key className="w-4 h-4 text-amber-400" />
+                <span>Tip: Connect your free Nexus API Key to query live Nexus servers in real-time.</span>
+              </div>
+              <button
+                onClick={() => {
+                  onClose();
+                  onOpenNexusApiKeyModal();
+                }}
+                className="px-3 py-1 rounded-lg font-bold bg-amber-500 hover:bg-amber-400 text-nordic-950 text-xs transition-colors"
+              >
+                Connect API Key
+              </button>
+            </div>
+          )}
           {/* Progress & Scanning Indicator */}
           <div className="bg-nordic-950/80 p-5 rounded-xl border border-slate-800 space-y-3.5">
             <div className="flex items-center justify-between text-sm sm:text-base">

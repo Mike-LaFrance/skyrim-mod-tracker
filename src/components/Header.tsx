@@ -12,6 +12,9 @@ import {
   RotateCcw,
   Boxes,
   Compass,
+  BookOpen,
+  Key,
+  ShieldCheck,
 } from 'lucide-react';
 import { sound } from '../utils/audio';
 
@@ -20,6 +23,7 @@ interface HeaderProps {
   activeMods: number;
   disabledMods: number;
   updatesAvailable: number;
+  hasNexusApiKey: boolean;
   onCheckUpdates: () => void;
   onCleanRenumber: () => void;
   onEnableAll: () => void;
@@ -27,6 +31,8 @@ interface HeaderProps {
   onOpenImportExport: () => void;
   onOpenAddMod: () => void;
   onResetDefaults: () => void;
+  onOpenHelpCenter: () => void;
+  onOpenNexusApiKey: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -34,6 +40,7 @@ export const Header: React.FC<HeaderProps> = ({
   activeMods,
   disabledMods,
   updatesAvailable,
+  hasNexusApiKey,
   onCheckUpdates,
   onCleanRenumber,
   onEnableAll,
@@ -41,6 +48,8 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenImportExport,
   onOpenAddMod,
   onResetDefaults,
+  onOpenHelpCenter,
+  onOpenNexusApiKey,
 }) => {
   const [isMuted, setIsMuted] = useState(sound.getMuted());
 
@@ -86,6 +95,36 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Quick Action Toolbar */}
           <div className="flex flex-wrap items-center gap-2.5 w-full xl:w-auto justify-start xl:justify-end">
+            {/* Help & Codex Button */}
+            <button
+              onClick={() => {
+                sound.playClick();
+                onOpenHelpCenter();
+              }}
+              className="flex items-center space-x-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/50 text-amber-300 shadow-sm transition-all"
+              title="Open Elder Scrolls Codex, Help Center & IONOS Deployment Guide"
+            >
+              <BookOpen className="w-4 h-4 text-amber-400" />
+              <span>Help & Codex</span>
+            </button>
+
+            {/* Nexus API Key Button */}
+            <button
+              onClick={() => {
+                sound.playClick();
+                onOpenNexusApiKey();
+              }}
+              className={`flex items-center space-x-1.5 px-3 sm:px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold border transition-all ${
+                hasNexusApiKey
+                  ? 'bg-emerald-950/40 border-emerald-600/50 text-emerald-300 hover:bg-emerald-900/50'
+                  : 'bg-nordic-800 border-slate-700/70 text-slate-300 hover:text-amber-300 hover:border-amber-500/40'
+              }`}
+              title="Configure Nexus Mods API Key for real-time version updates"
+            >
+              {hasNexusApiKey ? <ShieldCheck className="w-4 h-4 text-emerald-400" /> : <Key className="w-4 h-4 text-amber-400" />}
+              <span>{hasNexusApiKey ? 'Nexus API Active' : 'Nexus API'}</span>
+            </button>
+
             <button
               onClick={() => {
                 sound.playClick();
