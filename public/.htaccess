@@ -39,10 +39,28 @@
 </IfModule>
 
 # ----------------------------------------------------------------------
-# Security Headers
+# Security & Privacy Headers (Hidden from All Search Engines & Bots)
 # ----------------------------------------------------------------------
 <IfModule mod_headers.c>
   Header set X-Content-Type-Options "nosniff"
   Header set X-XSS-Protection "1; mode=block"
   Header set Referrer-Policy "strict-origin-when-cross-origin"
+  # Tell all search engines and spiders at the HTTP server level to never index
+  Header set X-Robots-Tag "noindex, nofollow, noarchive, nosnippet, noimageindex"
 </IfModule>
+
+# ----------------------------------------------------------------------
+# Block Known Automated Web Scrapers & Commercial Crawlers
+# ----------------------------------------------------------------------
+<IfModule mod_rewrite.c>
+  RewriteCond %{HTTP_USER_AGENT} (SemrushBot|AhrefsBot|MJ12bot|DotBot|Baiduspider|Bytespider|PetalBot|ZoominfoBot|CriteoBot|Seekport) [NC]
+  RewriteRule .* - [F,L]
+</IfModule>
+
+# ----------------------------------------------------------------------
+# Optional: 100% Password Protection (HTTP Basic Authentication)
+# ----------------------------------------------------------------------
+# If you wish to password-protect this folder so only YOU can load it:
+# 1. In your IONOS Control Panel, go to: Hosting -> Webspace -> Directory Protection.
+# 2. Select "/skyrim-mod-tracker" and create a Username and Password.
+# ----------------------------------------------------------------------
