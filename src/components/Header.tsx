@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   Layers,
   AlertTriangle,
+  Flame,
 } from 'lucide-react';
 import { PluginLimitGauge } from './PluginLimitGauge';
 import { sound } from '../utils/audio';
@@ -41,6 +42,7 @@ interface HeaderProps {
   onOpenNexusApiKey: () => void;
   onOpenDiagnostics: () => void;
   onOpenProfileManager: () => void;
+  onOpenDiscovery: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -64,6 +66,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenNexusApiKey,
   onOpenDiagnostics,
   onOpenProfileManager,
+  onOpenDiscovery,
 }) => {
   const [isMuted, setIsMuted] = useState(sound.getMuted());
 
@@ -175,6 +178,19 @@ export const Header: React.FC<HeaderProps> = ({
             >
               {hasNexusApiKey ? <ShieldCheck className="w-4 h-4 text-emerald-400" /> : <Key className="w-4 h-4 text-amber-400" />}
               <span>{hasNexusApiKey ? 'Nexus API Active' : 'Nexus API'}</span>
+            </button>
+
+            {/* Nexus Trends / Discovery Hub */}
+            <button
+              onClick={() => {
+                sound.playClick();
+                onOpenDiscovery();
+              }}
+              className="flex items-center space-x-1.5 px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold bg-gradient-to-r from-orange-500/25 via-amber-500/20 to-orange-500/25 hover:from-orange-500/40 hover:to-amber-500/35 border border-orange-500/50 text-amber-200 shadow-sm transition-all"
+              title="Explore trending, top downloaded, and latest SSE mods on Nexus Mods"
+            >
+              <Flame className="w-4 h-4 text-orange-400 animate-pulse-subtle" />
+              <span>Discover</span>
             </button>
 
             {/* Check Updates */}

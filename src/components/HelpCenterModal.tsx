@@ -370,6 +370,42 @@ export const HelpCenterModal: React.FC<HelpCenterModalProps> = ({
         ),
       },
 
+      // Feature: Nexus Discovery Hub
+      {
+        id: 'nexus-discovery-hub',
+        category: 'features',
+        title: '🔥 Nexus Discovery Hub: Live Trends & 1-Click Load Order Tracking',
+        summary: 'Explore trending, most downloaded, and newly released SSE mods from Nexus Mods with frequency time filters and one-click library tracking.',
+        keywords: ['discovery', 'nexus', 'trends', 'trending', 'popular', 'downloads', 'latest', 'flame', 'track'],
+        content: (
+          <div className="space-y-3.5 text-xs sm:text-sm text-slate-200 leading-relaxed">
+            <p>
+              The <strong>Nexus Discovery Hub</strong> brings the Nexus Mods community directly into your load order workflow, letting you explore what Skyrim modders are downloading and testing without leaving the app.
+            </p>
+            <div className="bg-nordic-950/90 p-4 rounded-xl border border-slate-800 space-y-2">
+              <h4 className="font-bold text-amber-300">Feed Channels:</h4>
+              <ul className="list-disc pl-5 space-y-1.5 text-slate-300">
+                <li><strong>🔥 Trending (Hot):</strong> Highlights community hits gaining rapid traction right now.</li>
+                <li><strong>📥 Most Downloaded:</strong> All-time and period leaders ranked by total download volume.</li>
+                <li><strong>✨ Latest Added:</strong> Fresh uploads and brand new releases for Skyrim SE.</li>
+              </ul>
+            </div>
+            <div className="bg-nordic-950/90 p-4 rounded-xl border border-slate-800 space-y-2">
+              <h4 className="font-bold text-amber-300">Time Frequency Filters:</h4>
+              <p className="text-slate-300">
+                Filter any feed by <em>Past Week (7d)</em>, <em>Past 2 Weeks (14d)</em>, <em>Past Month (30d)</em>, <em>Past 3 Months (90d)</em>, <em>Past 6 Months (180d)</em>, <em>Past Year (365d)</em>, or <em>All-Time</em>.
+              </p>
+            </div>
+            <div className="bg-nordic-950/90 p-4 rounded-xl border border-slate-800 space-y-2">
+              <h4 className="font-bold text-amber-300">1-Click Load Order Tracking:</h4>
+              <p className="text-slate-300">
+                Click <strong>&quot;Track in Load Order&quot;</strong> on any discovered card to instantly register the mod into your load order with auto-populated metadata, next sequential priority index, and active status. Cards automatically show an <strong>&quot;In Library (#NNNN)&quot;</strong> badge if you already track them.
+              </p>
+            </div>
+          </div>
+        ),
+      },
+
       // Feature 7: Artwork Banners
       {
         id: 'artwork-banners-guide',

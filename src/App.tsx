@@ -12,7 +12,8 @@ import { NexusApiKeyModal } from './components/NexusApiKeyModal';
 import { ConflictDiagnosticsModal } from './components/ConflictDiagnosticsModal';
 import { ProfileManagerModal } from './components/ProfileManagerModal';
 import { CategoryGroupSection } from './components/CategoryGroupSection';
-import { FilterState, MOD_CATEGORIES, ModCategory, ModProfile, SkyrimMod } from './types';
+import { NexusDiscoveryModal } from './components/NexusDiscoveryModal';
+import { DiscoveredNexusMod, FilterState, MOD_CATEGORIES, ModCategory, ModProfile, SkyrimMod } from './types';
 import {
   loadMods,
   saveMods,
@@ -54,6 +55,7 @@ export function App() {
   const [isNexusModalOpen, setIsNexusModalOpen] = useState(false);
   const [isDiagnosticsOpen, setIsDiagnosticsOpen] = useState(false);
   const [isProfilesModalOpen, setIsProfilesModalOpen] = useState(false);
+  const [isDiscoveryOpen, setIsDiscoveryOpen] = useState(false);
 
   // Profiles & Nexus key state
   const [hasNexusApiKey, setHasNexusApiKey] = useState(() => Boolean(getStoredNexusApiKey()));
@@ -267,6 +269,39 @@ export function App() {
     setProfiles(loadProfiles());
   };
 
+  // Track Discovered Mod from Nexus Discovery Hub
+  const handleTrackDiscoveredMod = (discovered: DiscoveredNexusMod) => {
+    const alreadyExists = mods.some((m) => {
+      if (m.name.toLowerCase().trim() === discovered.name.toLowerCase().trim()) return true;
+      if (m.nexusUrl && m.nexusUrl.includes(String(discovered.mod_id))) return true;
+      return false;
+    });
+
+    if (alreadyExists) return;
+
+    const newPriority = nextPriority;
+    const newMod: SkyrimMod = {
+      id: `discovered-${discovered.mod_id}-${Date.now()}`,
+      priority: newPriority,
+      status: 'active',
+      name: discovered.name,
+      author: discovered.author,
+      currentVersion: discovered.version || '1.0.0',
+      latestVersion: discovered.version || '1.0.0',
+      fileSize: 'Nexus Archive',
+      category: discovered.suggested_category || 'Other',
+      pluginType: discovered.suggested_plugin_type || 'ESP Plugin',
+      description: discovered.summary || '',
+      notes: `Tracked from Nexus Discovery Hub (#${discovered.mod_id})`,
+      nexusUrl: discovered.nexus_url,
+      imageUrl: discovered.picture_url,
+      hasUpdate: false,
+      tags: ['#testing'],
+    };
+
+    setMods((prev) => [...prev, newMod]);
+  };
+
   // Filter & Sort Logic
   const filteredAndSortedMods = useMemo(() => {
     let result = [...mods];
@@ -378,6 +413,7 @@ export function App() {
         onOpenNexusApiKey={() => setIsNexusModalOpen(true)}
         onOpenDiagnostics={() => setIsDiagnosticsOpen(true)}
         onOpenProfileManager={() => setIsProfilesModalOpen(true)}
+        onOpenDiscovery={() => setIsDiscoveryOpen(true)}
       />
 
       {/* Interactive Filter & View Bar */}
@@ -574,6 +610,18 @@ export function App() {
         currentMods={mods}
         onClose={() => setIsProfilesModalOpen(false)}
         onSelectProfile={handleSelectProfile}
+      />
+
+      <NexusDiscoveryModal
+        isOpen={isDiscoveryOpen}
+        onClose={() => setIsDiscoveryOpen(false)}
+        libraryMods={mods}
+        hasNexusApiKey={hasNexusApiKey}
+        onOpenNexusModal={() => {
+          setIsDiscoveryOpen(false);
+          setIsNexusModalOpen(true);
+        }}
+        onTrackMod={handleTrackDiscoveredMod}
       />
     </div>
   );

@@ -125,3 +125,25 @@ export const PREDEFINED_TAGS: { name: string; color: string; desc: string }[] = 
   { name: '#visuals', color: 'border-emerald-500/40 bg-emerald-500/15 text-emerald-300', desc: 'Textures, meshes, or shaders' },
   { name: '#performance', color: 'border-blue-500/40 bg-blue-500/15 text-blue-300', desc: 'Performance optimization or fix' },
 ];
+
+export type DiscoveryFeedType = 'trending' | 'most_downloaded' | 'latest_added';
+export type DiscoveryTimeRange = '7d' | '14d' | '30d' | '90d' | '180d' | '365d' | 'all';
+
+export interface DiscoveredNexusMod {
+  mod_id: number;
+  name: string;
+  summary: string;
+  description?: string;
+  author: string;
+  version: string;
+  category_id: number;
+  picture_url: string;
+  mod_downloads: number;
+  mod_unique_downloads: number;
+  endorsement_count: number;
+  created_timestamp: number;
+  updated_timestamp: number;
+  nexus_url: string;
+  suggested_category: ModCategory;
+  suggested_plugin_type: PluginType;
+}
