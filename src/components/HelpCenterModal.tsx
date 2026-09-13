@@ -339,6 +339,37 @@ export const HelpCenterModal: React.FC<HelpCenterModalProps> = ({
         ),
       },
 
+      // Feature: Organized by Category View
+      {
+        id: 'category-grouped-view',
+        category: 'features',
+        title: '📂 Organized by Category View (All At Once)',
+        summary: 'View your entire load order grouped into collapsible category sections with dedicated badges, icons, and status counts.',
+        keywords: ['category', 'group', 'grouped', 'view', 'collapse', 'expand', 'organize', 'tree', 'all at once'],
+        content: (
+          <div className="space-y-3.5 text-xs sm:text-sm text-slate-200 leading-relaxed">
+            <p>
+              Rather than scrolling through a single mixed list or filtering by one category at a time, the <strong>By Category</strong> view organizes your entire collection into distinct, collapsible category sections all at once!
+            </p>
+            <div className="bg-nordic-950/90 p-4 rounded-xl border border-slate-800 space-y-2">
+              <h4 className="font-bold text-amber-300">How to Activate:</h4>
+              <p className="text-slate-300">
+                In the <strong>FilterBar</strong> at the top of your mod list, locate the <strong>View Mode Switcher</strong> on the far right and click <strong>&quot;By Category&quot;</strong> (with the folder tree icon).
+              </p>
+            </div>
+            <div className="bg-nordic-950/90 p-4 rounded-xl border border-slate-800 space-y-2">
+              <h4 className="font-bold text-amber-300">Category Section Features:</h4>
+              <ul className="list-disc pl-5 space-y-1.5 text-slate-300">
+                <li><strong>Iconography & Header Badges:</strong> Each group features a custom themed icon (e.g. Official Content shield, Combat swords, Framework CPU, Visuals sun).</li>
+                <li><strong>Live Mod Counters:</strong> Section headers show active and disabled counts at a glance (e.g. &quot;5 active &middot; 1 disabled&quot;).</li>
+                <li><strong>Click-to-Collapse / Expand:</strong> Click any category header bar to collapse or expand its contents, keeping your workspace neat and focused.</li>
+                <li><strong>Full Interactivity Maintained:</strong> Priority badges, drag-and-drop handles, notes editors, update tags, and conflict advisories remain 100% interactive within each category section.</li>
+              </ul>
+            </div>
+          </div>
+        ),
+      },
+
       // Feature 7: Artwork Banners
       {
         id: 'artwork-banners-guide',

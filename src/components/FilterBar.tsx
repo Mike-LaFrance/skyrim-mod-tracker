@@ -5,6 +5,7 @@ import {
   Filter,
   ArrowUpDown,
   LayoutGrid,
+  FolderTree,
   Table as TableIcon,
   Boxes,
   Tag,
@@ -267,6 +268,18 @@ export const FilterBar: React.FC<FilterBarProps> = ({
               >
                 <LayoutGrid className="w-3.5 h-3.5" />
                 <span>Cards</span>
+              </button>
+              <button
+                onClick={() => handleViewModeToggle('grouped')}
+                className={`flex items-center space-x-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                  filters.viewMode === 'grouped'
+                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+                title="Grouped by Category View"
+              >
+                <FolderTree className="w-3.5 h-3.5" />
+                <span>By Category</span>
               </button>
               <button
                 onClick={() => handleViewModeToggle('table')}

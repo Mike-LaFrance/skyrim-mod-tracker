@@ -50,7 +50,7 @@ export type StatusFilter = 'all' | 'active' | 'disabled' | 'updates';
 export type SortField = 'priority' | 'name' | 'category' | 'update';
 export type SortOrder = 'asc' | 'desc';
 
-export type ViewMode = 'cards' | 'table';
+export type ViewMode = 'cards' | 'grouped' | 'table';
 
 export interface FilterState {
   searchQuery: string;
@@ -59,6 +59,7 @@ export interface FilterState {
   status: StatusFilter;
   tagFilter: string; // 'all' or specific tag like '#crash-suspect'
   showBanners: boolean;
+  groupByCategory: boolean;
   sortBy: SortField;
   sortOrder: SortOrder;
   viewMode: ViewMode;

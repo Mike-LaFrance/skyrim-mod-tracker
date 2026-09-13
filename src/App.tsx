@@ -11,7 +11,8 @@ import { HelpCenterModal } from './components/HelpCenterModal';
 import { NexusApiKeyModal } from './components/NexusApiKeyModal';
 import { ConflictDiagnosticsModal } from './components/ConflictDiagnosticsModal';
 import { ProfileManagerModal } from './components/ProfileManagerModal';
-import { FilterState, ModProfile, SkyrimMod } from './types';
+import { CategoryGroupSection } from './components/CategoryGroupSection';
+import { FilterState, MOD_CATEGORIES, ModCategory, ModProfile, SkyrimMod } from './types';
 import {
   loadMods,
   saveMods,
@@ -37,6 +38,7 @@ export function App() {
     status: 'all',
     tagFilter: 'all',
     showBanners: true,
+    groupByCategory: false,
     sortBy: 'priority',
     sortOrder: 'asc',
     viewMode: 'cards',
@@ -331,6 +333,18 @@ export function App() {
     return result;
   }, [mods, filters]);
 
+  // Grouped by Category calculation
+  const categoryGroups = useMemo(() => {
+    const groups: { category: ModCategory; mods: SkyrimMod[] }[] = [];
+    MOD_CATEGORIES.forEach((cat) => {
+      const matching = filteredAndSortedMods.filter((m) => m.category === cat);
+      if (matching.length > 0) {
+        groups.push({ category: cat, mods: matching });
+      }
+    });
+    return groups;
+  }, [filteredAndSortedMods]);
+
   // Quick Metrics
   const activeCount = useMemo(() => mods.filter((m) => m.status === 'active').length, [mods]);
   const disabledCount = useMemo(() => mods.filter((m) => m.status === 'disabled').length, [mods]);
@@ -396,6 +410,7 @@ export function App() {
                   status: 'all',
                   tagFilter: 'all',
                   showBanners: filters.showBanners,
+                  groupByCategory: false,
                   sortBy: 'priority',
                   sortOrder: 'asc',
                   viewMode: filters.viewMode,
@@ -405,6 +420,39 @@ export function App() {
             >
               Clear All Filters
             </button>
+          </div>
+        ) : filters.viewMode === 'grouped' ? (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between px-1 text-xs text-slate-400 font-mono">
+              <span className="flex items-center space-x-2">
+                <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                <span>Organized into <strong className="text-amber-300">{categoryGroups.length}</strong> Category Groups</span>
+              </span>
+              <span>{filteredAndSortedMods.length} total mods shown</span>
+            </div>
+            {categoryGroups.map((group) => (
+              <CategoryGroupSection
+                key={group.category}
+                category={group.category}
+                mods={group.mods}
+                allModsCount={mods.length}
+                conflictMap={conflictMap}
+                showBanners={filters.showBanners}
+                onToggleStatus={handleToggleStatus}
+                onMoveUp={handleMoveUp}
+                onMoveDown={handleMoveDown}
+                onSetPriority={handleSetPriority}
+                onEdit={handleOpenEdit}
+                onDelete={handleDeleteMod}
+                onMarkUpdated={handleMarkUpdated}
+                onUpdateNotes={handleUpdateNotes}
+                onDragStart={handleDragStart}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                dragTargetId={dragTargetId}
+              />
+            ))}
           </div>
         ) : filters.viewMode === 'cards' ? (
           <div className="space-y-3">
