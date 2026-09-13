@@ -269,12 +269,12 @@ export function App() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 2xl:px-12 py-6">
         {filteredAndSortedMods.length === 0 ? (
           <div className="py-16 text-center space-y-3 bg-nordic-900/40 rounded-2xl border border-slate-800/80">
             <Compass className="w-12 h-12 text-slate-500 mx-auto animate-pulse-subtle" />
-            <h3 className="text-lg font-cinzel font-semibold text-slate-300">No Skyrim Mods Found</h3>
-            <p className="text-xs text-slate-500 max-w-md mx-auto">
+            <h3 className="text-xl font-cinzel font-semibold text-slate-300">No Skyrim Mods Found</h3>
+            <p className="text-sm text-slate-400 max-w-md mx-auto">
               No active or disabled mods matched your current filter criteria. Try resetting search queries or category filters.
             </p>
             <button
@@ -290,13 +290,13 @@ export function App() {
                   viewMode: filters.viewMode,
                 });
               }}
-              className="px-4 py-2 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-400 text-nordic-950 shadow-gold-glow transition-all"
+              className="px-5 py-2.5 rounded-lg text-sm font-bold bg-amber-500 hover:bg-amber-400 text-nordic-950 shadow-gold-glow transition-all"
             >
               Clear All Filters
             </button>
           </div>
         ) : filters.viewMode === 'cards' ? (
-          <div className="space-y-3">
+          <div className="space-y-3.5">
             {filteredAndSortedMods.map((mod, index) => (
               <ModItemCard
                 key={mod.id}
@@ -329,13 +329,13 @@ export function App() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-900 bg-nordic-950 py-4 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <div className="flex items-center space-x-1 text-slate-400">
-            <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+      <footer className="border-t border-slate-900 bg-nordic-950 py-5 text-center text-xs sm:text-sm text-slate-400">
+        <div className="w-full px-4 sm:px-6 lg:px-8 2xl:px-12 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center space-x-2 text-slate-300 font-medium">
+            <ShieldCheck className="w-4 h-4 text-amber-400" />
             <span>Skyrim Special Edition &middot; ModOrganizer2 Load Order Standard</span>
           </div>
-          <p className="text-[11px] text-slate-500">
+          <p className="text-xs sm:text-sm text-slate-500">
             Compatible with SSE Engine Fixes, LOOT sorting conventions, and SKSE64.
           </p>
         </div>

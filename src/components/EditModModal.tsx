@@ -77,30 +77,30 @@ export const EditModModal: React.FC<EditModModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
-      <div className="bg-nordic-900 border border-gold-500/30 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+      <div className="bg-nordic-900 border border-gold-500/40 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[92vh] flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 bg-nordic-950 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Edit2 className="w-5 h-5 text-amber-400" />
-            <h2 className="text-lg font-cinzel font-bold text-amber-200">Edit Mod Metadata</h2>
+        <div className="px-6 py-4 sm:py-5 border-b border-slate-800 bg-nordic-950 flex items-center justify-between">
+          <div className="flex items-center space-x-2.5">
+            <Edit2 className="w-6 h-6 text-amber-400" />
+            <h2 className="text-xl sm:text-2xl font-cinzel font-bold text-amber-200">Edit Mod Metadata</h2>
           </div>
           <button
             onClick={() => {
               sound.playClick();
               onClose();
             }}
-            className="text-slate-400 hover:text-slate-200 p-1 rounded-lg hover:bg-nordic-800 transition-colors"
+            className="text-slate-400 hover:text-slate-200 p-1.5 rounded-xl hover:bg-nordic-800 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Form Content */}
-        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-4 text-xs">
+        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-4 sm:space-y-5 text-sm">
           {/* Mod Title */}
           <div>
-            <label className="block text-slate-300 font-semibold mb-1">
+            <label className="block text-slate-200 font-semibold mb-1.5 text-xs sm:text-sm">
               Mod Title <span className="text-amber-400">*</span>
             </label>
             <input
@@ -108,7 +108,7 @@ export const EditModModal: React.FC<EditModModalProps> = ({
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 bg-nordic-950 border border-slate-700 rounded-lg text-slate-200 focus:outline-none focus:ring-1 focus:ring-amber-400 text-sm"
+              className="w-full px-3.5 py-2.5 bg-nordic-950 border border-slate-700/90 rounded-xl text-slate-100 focus:outline-none focus:ring-1 focus:ring-amber-400 text-sm sm:text-base"
             />
           </div>
 

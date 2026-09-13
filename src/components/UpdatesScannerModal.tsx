@@ -71,15 +71,15 @@ export const UpdatesScannerModal: React.FC<UpdatesScannerModalProps> = ({
   const modsWithUpdates = mods.filter((m) => m.hasUpdate);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
-      <div className="bg-nordic-900 border border-gold-500/40 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+      <div className="bg-nordic-900 border border-gold-500/40 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[92vh] flex flex-col overflow-hidden">
         {/* Modal Header */}
-        <div className="px-6 py-4 border-b border-slate-800 bg-nordic-950 flex items-center justify-between">
-          <div className="flex items-center space-x-2.5">
-            <Sparkles className="w-5 h-5 text-amber-400 animate-spin-slow" />
+        <div className="px-6 py-4 sm:py-5 border-b border-slate-800 bg-nordic-950 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <Sparkles className="w-6 h-6 text-amber-400 animate-spin-slow" />
             <div>
-              <h2 className="text-lg font-cinzel font-bold text-amber-200">Nexus Version Auditor</h2>
-              <p className="text-[11px] text-slate-400">Auditing active Skyrim load order against Nexus releases</p>
+              <h2 className="text-xl sm:text-2xl font-cinzel font-bold text-amber-200">Nexus Version Auditor</h2>
+              <p className="text-xs sm:text-sm text-slate-400">Auditing active Skyrim load order against Nexus releases</p>
             </div>
           </div>
           <button
@@ -87,35 +87,35 @@ export const UpdatesScannerModal: React.FC<UpdatesScannerModalProps> = ({
               sound.playClick();
               onClose();
             }}
-            className="text-slate-400 hover:text-slate-200 p-1 rounded-lg hover:bg-nordic-800 transition-colors"
+            className="text-slate-400 hover:text-slate-200 p-1.5 rounded-xl hover:bg-nordic-800 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 overflow-y-auto space-y-5 text-xs">
+        <div className="p-6 overflow-y-auto space-y-5 text-sm">
           {/* Progress & Scanning Indicator */}
-          <div className="bg-nordic-950/80 p-4 rounded-xl border border-slate-800 space-y-3">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-semibold text-slate-300 flex items-center gap-1.5">
+          <div className="bg-nordic-950/80 p-5 rounded-xl border border-slate-800 space-y-3.5">
+            <div className="flex items-center justify-between text-sm sm:text-base">
+              <span className="font-semibold text-slate-200 flex items-center gap-2">
                 {isScanning ? (
                   <>
-                    <RefreshCw className="w-3.5 h-3.5 text-amber-400 animate-spin" />
+                    <RefreshCw className="w-4 h-4 text-amber-400 animate-spin" />
                     Querying Nexus Mods API ({progress}%)
                   </>
                 ) : (
                   <>
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400" />
                     Nexus Audit Completed ({mods.length} Mods Checked)
                   </>
                 )}
               </span>
-              <span className="font-mono text-amber-400 font-bold">{progress}%</span>
+              <span className="font-mono text-amber-400 font-bold text-base sm:text-lg">{progress}%</span>
             </div>
 
             {/* Animated Progress Bar */}
-            <div className="w-full bg-nordic-800 rounded-full h-2 overflow-hidden border border-slate-700/60">
+            <div className="w-full bg-nordic-800 rounded-full h-2.5 overflow-hidden border border-slate-700/60">
               <div
                 className="bg-gradient-to-r from-amber-600 via-amber-400 to-amber-300 h-full transition-all duration-75 shadow-gold-glow"
                 style={{ width: `${progress}%` }}
@@ -123,8 +123,8 @@ export const UpdatesScannerModal: React.FC<UpdatesScannerModalProps> = ({
             </div>
 
             {isScanning && (
-              <p className="text-[11px] text-slate-400 truncate font-mono">
-                Checking: <span className="text-slate-200">{currentScanningName || 'Initializing handshake...'}</span>
+              <p className="text-xs sm:text-sm text-slate-400 truncate font-mono">
+                Checking: <span className="text-slate-100 font-medium">{currentScanningName || 'Initializing handshake...'}</span>
               </p>
             )}
           </div>
@@ -132,12 +132,12 @@ export const UpdatesScannerModal: React.FC<UpdatesScannerModalProps> = ({
           {/* Results Summary */}
           {scanComplete && (
             <div className="space-y-4 animate-fade-in">
-              <div className="flex items-center justify-between bg-nordic-950/60 p-3 rounded-lg border border-slate-800">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-nordic-950/60 p-4 rounded-xl border border-slate-800">
                 <div>
-                  <span className="text-slate-300 font-bold">
+                  <span className="text-slate-100 font-bold text-sm sm:text-base">
                     Found {modsWithUpdates.length} {modsWithUpdates.length === 1 ? 'mod' : 'mods'} with newer releases
                   </span>
-                  <p className="text-slate-400 text-[11px]">
+                  <p className="text-slate-400 text-xs sm:text-sm">
                     {modsWithUpdates.length > 0
                       ? 'Review the outdated packages below and update them in 1-click.'
                       : 'All mods in your load order are running the latest version!'}
@@ -150,7 +150,7 @@ export const UpdatesScannerModal: React.FC<UpdatesScannerModalProps> = ({
                       sound.playChime();
                       onUpdateAll();
                     }}
-                    className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg font-bold bg-amber-500 hover:bg-amber-400 text-nordic-950 shadow-gold-glow transition-all"
+                    className="flex items-center space-x-2 px-4 py-2 rounded-xl font-bold bg-amber-500 hover:bg-amber-400 text-nordic-950 shadow-gold-glow text-xs sm:text-sm transition-all"
                   >
                     <DownloadCloud className="w-4 h-4" />
                     <span>Update All ({modsWithUpdates.length})</span>

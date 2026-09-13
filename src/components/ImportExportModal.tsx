@@ -67,15 +67,15 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
-      <div className="bg-nordic-900 border border-gold-500/30 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+      <div className="bg-nordic-900 border border-gold-500/40 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 bg-nordic-950 flex items-center justify-between">
-          <div className="flex items-center space-x-2.5">
-            <FileCode2 className="w-5 h-5 text-amber-400" />
+        <div className="px-6 py-4 sm:py-5 border-b border-slate-800 bg-nordic-950 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <FileCode2 className="w-6 h-6 text-amber-400" />
             <div>
-              <h2 className="text-lg font-cinzel font-bold text-amber-200">ModOrganizer2 Import & Export</h2>
-              <p className="text-[11px] text-slate-400">Standard MO2 CSV load order synchronization</p>
+              <h2 className="text-xl sm:text-2xl font-cinzel font-bold text-amber-200">ModOrganizer2 Import & Export</h2>
+              <p className="text-xs sm:text-sm text-slate-400">Standard MO2 CSV load order synchronization</p>
             </div>
           </div>
           <button
@@ -83,7 +83,7 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({
               sound.playClick();
               onClose();
             }}
-            className="text-slate-400 hover:text-slate-200 p-1 rounded-lg hover:bg-nordic-800 transition-colors"
+            className="text-slate-400 hover:text-slate-200 p-1.5 rounded-xl hover:bg-nordic-800 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -96,7 +96,7 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({
               sound.playClick();
               setActiveTab('export');
             }}
-            className={`py-3 px-4 font-semibold text-xs border-b-2 transition-all flex items-center space-x-2 ${
+            className={`py-3.5 px-5 font-semibold text-xs sm:text-sm border-b-2 transition-all flex items-center space-x-2 ${
               activeTab === 'export'
                 ? 'border-amber-400 text-amber-300 bg-amber-500/10'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -110,7 +110,7 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({
               sound.playClick();
               setActiveTab('import');
             }}
-            className={`py-3 px-4 font-semibold text-xs border-b-2 transition-all flex items-center space-x-2 ${
+            className={`py-3.5 px-5 font-semibold text-xs sm:text-sm border-b-2 transition-all flex items-center space-x-2 ${
               activeTab === 'import'
                 ? 'border-amber-400 text-amber-300 bg-amber-500/10'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -122,33 +122,33 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({
         </div>
 
         {/* Tab Content */}
-        <div className="p-6 overflow-y-auto space-y-4 text-xs flex-1">
+        <div className="p-6 overflow-y-auto space-y-4 text-sm flex-1">
           {activeTab === 'export' ? (
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-slate-400 text-xs">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <span className="text-slate-300 text-sm">
                   Copy or download your complete active/disabled load order in MO2 format:
                 </span>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2.5">
                   <button
                     onClick={handleCopyExport}
-                    className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-nordic-800 hover:bg-nordic-750 text-slate-200 border border-slate-700 transition-colors"
+                    className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-nordic-800 hover:bg-nordic-750 text-slate-200 border border-slate-700 text-xs sm:text-sm font-semibold transition-colors"
                   >
-                    {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
                     <span>{copied ? 'Copied!' : 'Copy to Clipboard'}</span>
                   </button>
                   <button
                     onClick={handleDownloadTxt}
-                    className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-nordic-950 font-bold transition-all shadow-gold-glow"
+                    className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-nordic-950 font-bold transition-all shadow-gold-glow text-xs sm:text-sm"
                   >
-                    <Download className="w-3.5 h-3.5" />
+                    <Download className="w-4 h-4" />
                     <span>Download .txt</span>
                   </button>
                 </div>
               </div>
 
               {/* Code preview area */}
-              <div className="bg-nordic-950 border border-slate-800 rounded-xl p-3 font-mono text-[11px] text-slate-300 max-h-80 overflow-y-auto leading-relaxed whitespace-pre select-all">
+              <div className="bg-nordic-950 border border-slate-800 rounded-xl p-4 font-mono text-xs sm:text-sm text-slate-300 max-h-96 overflow-y-auto leading-relaxed whitespace-pre select-all">
                 {exportedText}
               </div>
             </div>

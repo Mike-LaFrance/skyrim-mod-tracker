@@ -61,43 +61,43 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Top ambient gold glow accent bar */}
       <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-amber-500/80 to-transparent" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+      <div className="w-full px-4 sm:px-6 lg:px-8 2xl:px-12 py-4">
+        <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4">
           {/* Logo & Title */}
-          <div className="flex items-center space-x-3.5">
-            <div className="relative p-2.5 rounded-xl bg-gradient-to-br from-amber-500/20 via-nordic-800 to-nordic-900 border border-amber-500/40 shadow-gold-glow flex items-center justify-center">
+          <div className="flex items-center space-x-4">
+            <div className="relative p-3 rounded-xl bg-gradient-to-br from-amber-500/25 via-nordic-800 to-nordic-900 border border-amber-500/50 shadow-gold-glow flex items-center justify-center flex-shrink-0">
               {/* Skyrim Dragon-inspired emblem */}
-              <Compass className="w-7 h-7 text-amber-400 transform -rotate-45" />
+              <Compass className="w-8 h-8 sm:w-9 sm:h-9 text-amber-400 transform -rotate-45" />
             </div>
             <div>
-              <div className="flex items-center space-x-2">
-                <h1 className="text-xl sm:text-2xl font-cinzel font-extrabold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-100 drop-shadow-sm">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-cinzel font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-amber-400 to-amber-200 drop-shadow">
                   SKYRIM LOAD ORDER TRACKER
                 </h1>
-                <span className="hidden sm:inline-block px-2 py-0.5 text-[10px] uppercase font-mono font-bold tracking-widest text-amber-400 bg-amber-950/60 border border-amber-600/40 rounded">
+                <span className="inline-block px-2.5 py-0.5 text-xs uppercase font-mono font-bold tracking-widest text-amber-400 bg-amber-950/70 border border-amber-600/50 rounded shadow-sm">
                   MO2 READY
                 </span>
               </div>
-              <p className="text-xs text-slate-400 font-medium tracking-wide">
+              <p className="text-sm sm:text-base text-slate-300 font-medium tracking-wide mt-0.5">
                 Special Edition & Anniversary Load Order Companion &middot; Nexus Update Auditor
               </p>
             </div>
           </div>
 
           {/* Quick Action Toolbar */}
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2.5 w-full xl:w-auto justify-start xl:justify-end">
             <button
               onClick={() => {
                 sound.playClick();
                 onCheckUpdates();
               }}
-              className="group relative flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-amber-600/30 to-amber-500/20 hover:from-amber-600/50 hover:to-amber-500/40 border border-amber-500/40 text-amber-200 shadow-sm transition-all"
+              className="group relative flex items-center space-x-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-gradient-to-r from-amber-600/30 to-amber-500/20 hover:from-amber-600/50 hover:to-amber-500/40 border border-amber-500/40 text-amber-200 shadow-sm transition-all"
               title="Audit installed versions against latest Nexus releases"
             >
-              <Sparkles className="w-3.5 h-3.5 text-amber-400 group-hover:rotate-12 transition-transform" />
+              <Sparkles className="w-4 h-4 text-amber-400 group-hover:rotate-12 transition-transform" />
               <span>Check Updates</span>
               {updatesAvailable > 0 && (
-                <span className="ml-1 px-1.5 py-0.2 rounded-full bg-amber-500 text-nordic-950 text-[10px] font-bold font-mono animate-pulse">
+                <span className="ml-1.5 px-2 py-0.5 rounded-full bg-amber-500 text-nordic-950 text-xs font-bold font-mono animate-pulse">
                   {updatesAvailable}
                 </span>
               )}
@@ -108,10 +108,10 @@ export const Header: React.FC<HeaderProps> = ({
                 sound.playSwoosh();
                 onCleanRenumber();
               }}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-nordic-800 hover:bg-nordic-750 border border-slate-700/60 text-slate-300 hover:text-white transition-colors"
+              className="flex items-center space-x-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-nordic-800 hover:bg-nordic-750 border border-slate-700/70 text-slate-200 hover:text-white transition-colors"
               title="Re-index all load order priorities sequentially without gaps (#0000..#NNNN)"
             >
-              <ListOrdered className="w-3.5 h-3.5 text-slate-400" />
+              <ListOrdered className="w-4 h-4 text-slate-400" />
               <span>Clean Renumber</span>
             </button>
 
@@ -120,10 +120,10 @@ export const Header: React.FC<HeaderProps> = ({
                 sound.playClick();
                 onOpenImportExport();
               }}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-nordic-800 hover:bg-nordic-750 border border-slate-700/60 text-slate-300 hover:text-white transition-colors"
+              className="flex items-center space-x-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium bg-nordic-800 hover:bg-nordic-750 border border-slate-700/70 text-slate-200 hover:text-white transition-colors"
               title="Import or Export ModOrganizer2 CSV / modlist format"
             >
-              <FileCode2 className="w-3.5 h-3.5 text-cyan-400" />
+              <FileCode2 className="w-4 h-4 text-cyan-400" />
               <span>MO2 Import/Export</span>
             </button>
 
@@ -132,75 +132,75 @@ export const Header: React.FC<HeaderProps> = ({
                 sound.playClick();
                 onOpenAddMod();
               }}
-              className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-400 text-nordic-950 shadow-gold-glow transition-all"
+              className="flex items-center space-x-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-amber-500 hover:bg-amber-400 text-nordic-950 shadow-gold-glow transition-all"
             >
-              <PlusCircle className="w-4 h-4" />
+              <PlusCircle className="w-4 h-4 sm:w-5 sm:h-5" />
               <span>Add Mod</span>
             </button>
 
             {/* Audio Mute Button */}
             <button
               onClick={handleToggleMute}
-              className={`p-1.5 rounded-lg border transition-colors ${
+              className={`p-2 rounded-xl border transition-colors ${
                 isMuted
                   ? 'bg-red-950/40 border-red-800/50 text-red-400'
                   : 'bg-nordic-800 border-slate-700 text-slate-300 hover:text-amber-400 hover:border-amber-500/40'
               }`}
               title={isMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
             >
-              {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+              {isMuted ? <VolumeX className="w-4 h-4 sm:w-5 sm:h-5" /> : <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />}
             </button>
 
             {/* Reset Button */}
             <button
               onClick={handleResetClick}
-              className="p-1.5 rounded-lg bg-nordic-800 hover:bg-red-950/40 border border-slate-700/60 hover:border-red-700/50 text-slate-400 hover:text-red-400 transition-colors"
+              className="p-2 rounded-xl bg-nordic-800 hover:bg-red-950/40 border border-slate-700/60 hover:border-red-700/50 text-slate-400 hover:text-red-400 transition-colors"
               title="Reset to 60+ Default Skyrim SE Mods Preset"
             >
-              <RotateCcw className="w-4 h-4" />
+              <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
 
         {/* Live Metrics Ribbon */}
-        <div className="mt-3 pt-2.5 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded bg-nordic-900/90 border border-slate-800">
-              <Boxes className="w-3.5 h-3.5 text-slate-400" />
+        <div className="mt-4 pt-3 border-t border-slate-800/90 flex flex-wrap items-center justify-between gap-3 text-sm">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+            <div className="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-nordic-900/90 border border-slate-800">
+              <Boxes className="w-4 h-4 text-slate-400" />
               <span className="text-slate-400">Total Mods:</span>
-              <span className="font-mono font-bold text-slate-200">{totalMods}</span>
+              <span className="font-mono font-bold text-slate-100 text-sm sm:text-base">{totalMods}</span>
             </div>
 
-            <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded bg-emerald-950/30 border border-emerald-800/40 text-emerald-300">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+            <div className="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-emerald-950/40 border border-emerald-800/50 text-emerald-300">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
               <span>Active (+):</span>
-              <span className="font-mono font-bold text-emerald-200">{activeMods}</span>
+              <span className="font-mono font-bold text-emerald-100 text-sm sm:text-base">{activeMods}</span>
             </div>
 
-            <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded bg-rose-950/30 border border-rose-800/40 text-rose-300">
-              <XCircle className="w-3.5 h-3.5 text-rose-400" />
+            <div className="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-rose-950/40 border border-rose-800/50 text-rose-300">
+              <XCircle className="w-4 h-4 text-rose-400" />
               <span>Disabled (-):</span>
-              <span className="font-mono font-bold text-rose-200">{disabledMods}</span>
+              <span className="font-mono font-bold text-rose-100 text-sm sm:text-base">{disabledMods}</span>
             </div>
 
             {updatesAvailable > 0 && (
-              <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded bg-amber-950/40 border border-amber-600/40 text-amber-300 animate-pulse-subtle">
-                <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
+              <div className="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-amber-950/50 border border-amber-600/50 text-amber-300 animate-pulse-subtle">
+                <ShieldAlert className="w-4 h-4 text-amber-400" />
                 <span>Updates:</span>
-                <span className="font-mono font-bold text-amber-200">{updatesAvailable}</span>
+                <span className="font-mono font-bold text-amber-200 text-sm sm:text-base">{updatesAvailable}</span>
               </div>
             )}
           </div>
 
           {/* Quick Bulk Toggle Buttons */}
-          <div className="flex items-center space-x-2">
-            <span className="text-slate-400 text-[11px]">Bulk State:</span>
+          <div className="flex items-center space-x-2.5">
+            <span className="text-slate-400 text-xs sm:text-sm font-medium">Bulk State:</span>
             <button
               onClick={() => {
                 sound.playToggle();
                 onEnableAll();
               }}
-              className="px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-900/40 hover:bg-emerald-800/60 text-emerald-200 border border-emerald-700/50 transition-colors"
+              className="px-3 py-1 rounded-lg text-xs sm:text-sm font-semibold bg-emerald-900/40 hover:bg-emerald-800/60 text-emerald-200 border border-emerald-700/60 transition-colors"
             >
               Enable All
             </button>
@@ -209,7 +209,7 @@ export const Header: React.FC<HeaderProps> = ({
                 sound.playToggle();
                 onDisableAll();
               }}
-              className="px-2 py-0.5 rounded text-[11px] font-medium bg-rose-900/40 hover:bg-rose-800/60 text-rose-200 border border-rose-700/50 transition-colors"
+              className="px-3 py-1 rounded-lg text-xs sm:text-sm font-semibold bg-rose-900/40 hover:bg-rose-800/60 text-rose-200 border border-rose-700/60 transition-colors"
             >
               Disable All
             </button>
